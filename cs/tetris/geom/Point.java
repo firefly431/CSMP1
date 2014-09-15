@@ -17,4 +17,16 @@ public class Point {
         this.x = x;
         this.y = y;
     }
+
+    public void rotateClockwise() {
+        int temp = x;
+        x = y;
+        y = -1 * temp;
+    }
+
+    public void rotateCounterClockwise() {
+        int temp = x;
+        x = -1 * y;
+        y = temp;
+    }
 }

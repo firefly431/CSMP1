@@ -46,4 +46,6 @@ public class Piece {
             coords[i] = new Point(piece_coords[index][i][0], piece_coords[index][i][1]);
         position = new Point(x, y);
     }
+    
+
 }
