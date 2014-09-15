@@ -5,12 +5,24 @@
 
 package cs.tetris;
 
-import javax.swing.JFrame;
+import java.awt.Graphics;
+import javax.swing.JPanel;
 
 /**
  *
  * @author s544545
  */
-public class gameInterface extends JFrame{
+public class gameInterface extends JPanel{
+
+
+
+    public gameInterface() {}
+
+    public void paint(Graphics g) {
+        super.paint(g);
+
+    }
+
+
 
 }
