@@ -23,6 +23,7 @@ public class GameFrame extends JFrame {
 
     public GameFrame() {
         super("Tetris!");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         if (mainFrame != null) {
             throw new RuntimeException("More than one GameFrame");
@@ -34,8 +35,26 @@ public class GameFrame extends JFrame {
      * Initialize components and game
      */
     public void init() {
+        MainMenu.init();
         currentPanel = new MainMenu();
         add(currentPanel);
+        addKeyListener((KeyListener)currentPanel);
+    }
+
+    public JPanel getCurrentPanel() {
+        return currentPanel;
+    }
+
+    public void transition(JPanel target) {
+        if (currentPanel == target)
+            return;
+        if (currentPanel != null) {
+            remove(currentPanel);
+            removeKeyListener((KeyListener)currentPanel);
+        }
+        currentPanel = target;
+        add(currentPanel);
+        addKeyListener((KeyListener)currentPanel);
     }
 
     public static void main(String argv[]) {
