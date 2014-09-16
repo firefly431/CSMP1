@@ -6,15 +6,28 @@ import java.awt.event.*;
 
 /**
  * Main game window. Contains menu panel or board panel.
- * @author s506571
  */
 public class GameFrame extends JFrame {
-    JPanel currentPanel;
+    // note: WINDOW_WIDTH > BOARD_WIDTH * PIECE_SIZE
+    // same for height
+    public static int WINDOW_WIDTH = 640;
+    public static int WINDOW_HEIGHT = 480;
+    private JPanel currentPanel;
+
+    // allow other classes to access the main frame
+    private static GameFrame mainFrame = null;
+
+    public static GameFrame get() {
+        return mainFrame;
+    }
 
     public GameFrame() {
         super("Tetris!");
-        setSize(Board.BOARD_WIDTH * Board.PIECE_SIZE,
-                Board.BOARD_HEIGHT * Board.PIECE_SIZE);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        if (mainFrame != null) {
+            throw new RuntimeException("More than one GameFrame");
+        }
+        mainFrame = this;
     }
     
     /**

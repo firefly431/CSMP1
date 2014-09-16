@@ -16,6 +16,6 @@ import java.awt.event.*;
 public class MainMenu extends JPanel {
     @Override
     public Dimension getPreferredSize() {
-        //
+        return new Dimension();
     }
 }
