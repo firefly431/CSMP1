@@ -47,5 +47,16 @@ public class Piece {
         position = new Point(x, y);
     }
     
-
+    public void rotateClockwise() {                 //need to find if piece is on the edge or touching another piece
+        for(Point p : coords) {
+                p.rotatePointClockwise();
+        }
+    }
+    
+    public void rotateCounterClockwise() {          //need to find if piece is on the edge or touching another piece
+        for(Point p : coords) {
+                p.rotatePointCounterClockwise();
+        }
+    }
 }
+
