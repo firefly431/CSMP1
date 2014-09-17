@@ -59,6 +59,7 @@ public class GameFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
             removeKeyListener(currentPanel);
+            currentPanel.removed();
         }
         currentPanel = target;
         getContentPane().add(currentPanel);

@@ -41,6 +41,14 @@ public class Board {
     }
 
     public int get(int x, int y) {
-        return grid[y][x];
+        try {
+            return grid[y][x];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return -2;
+        }
+    }
+
+    public void set(int x, int y, int data) {
+        grid[y][x] = data;
     }
 }

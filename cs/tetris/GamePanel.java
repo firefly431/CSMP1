@@ -9,26 +9,33 @@ import java.awt.*;
 import java.awt.event.*;
 
 import cs.tetris.geom.Point;
+import javax.swing.Timer;
 
 /**
  *
  * @author s506571
  */
-public class GamePanel extends StatePanel {
-    public static int BOARD_PIXEL_WIDTH = Board.BOARD_WIDTH * Board.PIECE_SIZE;
-    public static int BOARD_PIXEL_HEIGHT = Board.BOARD_HEIGHT * Board.PIECE_SIZE;
-    public static int BOARD_X = (GameFrame.WINDOW_WIDTH - BOARD_PIXEL_WIDTH) / 2;
-    public static int BOARD_Y = GameFrame.WINDOW_HEIGHT - BOARD_PIXEL_HEIGHT;
+public class GamePanel extends StatePanel implements ActionListener {
+    public static final int BOARD_PIXEL_WIDTH = Board.BOARD_WIDTH * Board.PIECE_SIZE;
+    public static final int BOARD_PIXEL_HEIGHT = Board.BOARD_HEIGHT * Board.PIECE_SIZE;
+    public static final int BOARD_X = (GameFrame.WINDOW_WIDTH - BOARD_PIXEL_WIDTH) / 2;
+    public static final int BOARD_Y = GameFrame.WINDOW_HEIGHT - BOARD_PIXEL_HEIGHT;
 
-    public static Color BACKGROUND_COLOR = new Color(186, 186, 186);
-    public static Color EMPTY_COLOR = new Color(128, 128, 128);
+    public static final Color BACKGROUND_COLOR = new Color(186, 186, 186);
+    public static final Color EMPTY_COLOR = new Color(128, 128, 128);
 
     private Board board;
     private Piece piece;
 
+    private boolean running = true;
+    private Timer timer;
+
+    public static final int DROP_DELAY = 300;
+
     public GamePanel() {
         board = new Board();
         piece = new Piece((int)(Math.random() * Piece.PIECE_NUM));
+        timer = new Timer(DROP_DELAY, this);
     }
 
     public GamePanel(Board b) {
@@ -75,6 +82,11 @@ public class GamePanel extends StatePanel {
             for (Point x : piece.coords) {
                 if (x.x + piece.position.x < minx)
                     minx = x.x + piece.position.x;
+                if (minx >= 0)
+                    if (board.get(x.x + piece.position.x, x.y + piece.position.y) > -1) {
+                        piece.position.x++;
+                        break;
+                    }
             }
             piece.position.x -= minx;
         }
@@ -84,9 +96,48 @@ public class GamePanel extends StatePanel {
             for (Point x : piece.coords) {
                 if (x.x + piece.position.x > maxx)
                     maxx = x.x + piece.position.x;
+                if (maxx <= Board.BOARD_WIDTH - 1)
+                    if (board.get(x.x + piece.position.x, x.y + piece.position.y) > -1) {
+                        piece.position.x--;
+                        break;
+                    }
             }
             piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
         }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            movePieceDown();
+        }
         repaint();
+    }
+
+    @Override
+    public void removed() {
+        running = false;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        movePieceDown();
+    }
+
+    protected void movePieceDown() {
+        boolean drop = false;
+        for (Point x : piece.coords) {
+            int tx = x.x + piece.position.x;
+            int ty = x.y + piece.position.y + 1;
+            if (ty >= Board.BOARD_HEIGHT || board.get(tx, ty) > -1) {
+                drop = true;
+                break;
+            }
+        }
+        if (drop) {
+            for (Point x : piece.coords) {
+                int tx = x.x + piece.position.x;
+                int ty = x.y + piece.position.y;
+                board.set(tx, ty, piece.index);
+                // replace piece
+            }
+        } else {
+            piece.position.y++;
+        }
     }
 }
