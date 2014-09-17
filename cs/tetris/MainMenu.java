@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
  *
  * @author s506571
  */
-public class MainMenu extends JPanel implements KeyListener {
+public class MainMenu extends StatePanel {
     protected static BufferedImage menuImg = null;
 
     public MainMenu() {
@@ -34,24 +34,14 @@ public class MainMenu extends JPanel implements KeyListener {
     }
 
     @Override
-    public Dimension getPreferredSize() {
-        return new Dimension();
-    }
-
-    @Override
     public void paint(Graphics g) {
         if (menuImg != null)
             g.drawImage(menuImg, 0, 0, this);
     }
 
-    public void keyTyped(KeyEvent e) {
-    }
-
-    public void keyPressed(KeyEvent e) {
-    }
-
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER)
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             GameFrame.get().transition(new GamePanel());
+        }
     }
 }

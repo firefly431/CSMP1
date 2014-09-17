@@ -12,7 +12,7 @@ public class GameFrame extends JFrame {
     // same for height
     public static int WINDOW_WIDTH = 640;
     public static int WINDOW_HEIGHT = 480;
-    private JPanel currentPanel;
+    private StatePanel currentPanel;
 
     // allow other classes to access the main frame
     private static GameFrame mainFrame = null;
@@ -24,7 +24,7 @@ public class GameFrame extends JFrame {
     public GameFrame() {
         super("Tetris!");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        getContentPane().setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         if (mainFrame != null) {
             throw new RuntimeException("More than one GameFrame");
         }
@@ -37,24 +37,34 @@ public class GameFrame extends JFrame {
     public void init() {
         MainMenu.init();
         currentPanel = new MainMenu();
-        add(currentPanel);
+        getContentPane().add(currentPanel);
         addKeyListener((KeyListener)currentPanel);
+        pack();
     }
 
     public JPanel getCurrentPanel() {
         return currentPanel;
     }
 
-    public void transition(JPanel target) {
+    /**
+     * Transition to another panel
+     *
+     * Removes current panel, if any, and adds the target panel and its
+     * KeyListener.
+     * @param target Target JPanel, must be a KeyListener
+     */
+    public void transition(StatePanel target) {
         if (currentPanel == target)
             return;
         if (currentPanel != null) {
             remove(currentPanel);
-            removeKeyListener((KeyListener)currentPanel);
+            removeKeyListener(currentPanel);
         }
         currentPanel = target;
-        add(currentPanel);
-        addKeyListener((KeyListener)currentPanel);
+        getContentPane().add(currentPanel);
+        addKeyListener(currentPanel);
+        currentPanel.revalidate();
+        repaint();
     }
 
     public static void main(String argv[]) {
