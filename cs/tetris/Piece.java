@@ -65,19 +65,19 @@ public class Piece {
 
     public void moveDown() {
         for(Point p: coords) {
-            p.y -= 1;
+            p.y ++;
         }
     }
 
     public void moveLeft() {
         for(Point p: coords) {
-            p.x -= 1;
+            p.x --;
         }
     }
 
     public void moveRight() {
         for(Point p: coords) {
-            p.x += 1;
+            p.x ++;
         }
     }
 }
