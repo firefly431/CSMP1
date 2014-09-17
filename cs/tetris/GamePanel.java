@@ -8,6 +8,8 @@ package cs.tetris;
 import java.awt.*;
 import java.awt.event.*;
 
+import cs.tetris.geom.Point;
+
 /**
  *
  * @author s506571
@@ -22,13 +24,28 @@ public class GamePanel extends StatePanel {
     public static Color EMPTY_COLOR = new Color(128, 128, 128);
 
     private Board board;
+    private Piece piece;
 
     public GamePanel() {
         board = new Board();
+        piece = new Piece((int)(Math.random() * Piece.PIECE_NUM));
     }
 
     public GamePanel(Board b) {
         board = b;
+    }
+
+    protected void drawPiece(Graphics g, Piece p, int x, int y) {
+        drawPiece(g, p, new Point(x, y));
+    }
+
+    protected void drawPiece(Graphics g, Piece p, Point origin) {
+        g.setColor(Piece.piece_colors[p.index]);
+        for (Point x : p.coords) {
+            int px = origin.x + (p.position.x + x.x) * Board.PIECE_SIZE;
+            int py = origin.y + (p.position.y + x.y) * Board.PIECE_SIZE;
+            g.fillRect(px, py, Board.PIECE_SIZE - 1, Board.PIECE_SIZE - 1);
+        }
     }
 
     @Override
@@ -47,5 +64,29 @@ public class GamePanel extends StatePanel {
                 g.fillRect(px, py, Board.PIECE_SIZE - 1, Board.PIECE_SIZE - 1);
             }
         }
+        drawPiece(g, piece, BOARD_X, BOARD_Y);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            piece.position.x--;
+            int minx = 0;
+            for (Point x : piece.coords) {
+                if (x.x + piece.position.x < minx)
+                    minx = x.x + piece.position.x;
+            }
+            piece.position.x -= minx;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            piece.position.x++;
+            int maxx = Board.BOARD_WIDTH - 1;
+            for (Point x : piece.coords) {
+                if (x.x + piece.position.x > maxx)
+                    maxx = x.x + piece.position.x;
+            }
+            piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
+        }
+        repaint();
     }
 }

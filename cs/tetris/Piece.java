@@ -20,6 +20,8 @@ public class Piece {
     public static int PIECE_J = 4;
     public static int PIECE_T = 5;
     public static int PIECE_O = 6;
+    public static int PIECE_NUM = 7;
+    
     public static Color piece_colors[] = {
         Color.CYAN, Color.GREEN, Color.RED, Color.ORANGE, Color.BLUE,
         Color.MAGENTA, Color.YELLOW
@@ -35,12 +37,14 @@ public class Piece {
     };
     Point coords[];
     Point position;
+    int index;
 
     public Piece(int index) {
         this(index, 0, 0);
     }
 
     public Piece(int index, int x, int y) {
+        this.index = index;
         coords = new Point[4];
         for (int i = 0; i < 4; i++)
             coords[i] = new Point(piece_coords[index][i][0], piece_coords[index][i][1]);
