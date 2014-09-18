@@ -13,7 +13,7 @@ public class Board {
     // skeleton, should merge with Thienson
     public static int BOARD_WIDTH = 10;
     public static int BOARD_HEIGHT = 20;
-    public static int PIECE_SIZE = 10; // 10 px
+    public static int PIECE_SIZE = 20; // in pixels
 
     int[][] grid = new int[BOARD_HEIGHT][BOARD_WIDTH];
 

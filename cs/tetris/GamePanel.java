@@ -108,6 +108,36 @@ public class GamePanel extends StatePanel implements ActionListener {
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             movePieceDown();
         }
+        if (e.getKeyCode() == KeyEvent.VK_Z || e.getKeyCode() == KeyEvent.VK_X) {
+            if (e.getKeyCode() == KeyEvent.VK_Z)
+                piece.rotateCounterClockwise();
+            else
+                piece.rotateClockwise();
+            // keep within bounds
+            int maxx = Board.BOARD_WIDTH - 1;
+            int minx = 0;
+            for (Point x : piece.coords) {
+                if (x.x + piece.position.x > maxx)
+                    maxx = x.x + piece.position.x;
+                if (x.x + piece.position.x < minx)
+                    minx = x.x + piece.position.x;
+            }
+            piece.position.x -= (maxx - Board.BOARD_WIDTH + 1) + minx;
+            while (true) {
+                boolean move = false;
+                for (Point x : piece.coords) {
+                    int tx = x.x + piece.position.x;
+                    int ty = x.y + piece.position.y;
+                    if (board.get(tx, ty) > -1) {
+                        move = true;
+                        piece.position.y--;
+                        break;
+                    }
+                }
+                if (!move)
+                    break;
+            }
+        }
         repaint();
     }
 
@@ -126,9 +156,6 @@ public class GamePanel extends StatePanel implements ActionListener {
             int tx = x.x + piece.position.x;
             int ty = x.y + piece.position.y + 1;
             if (ty >= Board.BOARD_HEIGHT || board.get(tx, ty) > -1) {
-                System.out.printf("Dropping because (%d, %d)\n", tx, ty);
-                if (ty < Board.BOARD_HEIGHT)
-                    System.out.println("Lol " + board.get(tx, ty));
                 drop = true;
                 break;
             }
