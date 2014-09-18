@@ -13,20 +13,20 @@ import cs.tetris.geom.Point;
  * @author s506571
  */
 public class Piece {
-    public static int PIECE_I = 0;
-    public static int PIECE_S = 1;
-    public static int PIECE_Z = 2;
-    public static int PIECE_L = 3;
-    public static int PIECE_J = 4;
-    public static int PIECE_T = 5;
-    public static int PIECE_O = 6;
-    public static int PIECE_NUM = 7;
+    public static final int PIECE_I = 0;
+    public static final int PIECE_S = 1;
+    public static final int PIECE_Z = 2;
+    public static final int PIECE_L = 3;
+    public static final int PIECE_J = 4;
+    public static final int PIECE_T = 5;
+    public static final int PIECE_O = 6;
+    public static final int PIECE_NUM = 7;
     
-    public static Color piece_colors[] = {
+    public static final Color piece_colors[] = {
         Color.CYAN, Color.GREEN, Color.RED, Color.ORANGE, Color.BLUE,
         Color.MAGENTA, Color.YELLOW
     };
-    private static int piece_coords[][][] = {
+    private static final int piece_coords[][][] = {
         {{0, -2}, {0, -1}, {0, 0}, {0, 1}},
         {{0, -1}, {1, -1}, {-1, 0}, {0, 0}},
         {{-1, -1}, {0, -1}, {0, 0}, {1, 0}},
@@ -51,15 +51,15 @@ public class Piece {
         position = new Point(x, y);
     }
     
-    public void rotateClockwise() {                 //need to find if piece is on the edge or touching another piece
+    public void rotateClockwise() {
         for(Point p : coords) {
-                p.rotatePointClockwise();
+            p.rotatePointClockwise();
         }
     }
     
-    public void rotateCounterClockwise() {          //need to find if piece is on the edge or touching another piece
+    public void rotateCounterClockwise() {
         for(Point p : coords) {
-                p.rotatePointCounterClockwise();
+            p.rotatePointCounterClockwise();
         }
     }
 }
