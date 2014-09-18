@@ -30,10 +30,6 @@ public class Board {
                 grid[y][x] = -1;
             }
         }
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
     }
 
     public int get(int x, int y) {
