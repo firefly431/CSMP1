@@ -108,6 +108,36 @@ public class GamePanel extends StatePanel implements ActionListener {
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             movePieceDown();
         }
+        if (e.getKeyCode() == KeyEvent.VK_Z || e.getKeyCode() == KeyEvent.VK_X) {
+            if (e.getKeyCode() == KeyEvent.VK_Z)
+                piece.rotateCounterClockwise();
+            else
+                piece.rotateClockwise();
+            // keep within bounds
+            int maxx = Board.BOARD_WIDTH - 1;
+            int minx = 0;
+            for (Point x : piece.coords) {
+                if (x.x + piece.position.x > maxx)
+                    maxx = x.x + piece.position.x;
+                if (x.x + piece.position.x < minx)
+                    minx = x.x + piece.position.x;
+            }
+            piece.position.x -= (maxx - Board.BOARD_WIDTH + 1) + minx;
+            while (true) {
+                boolean move = false;
+                for (Point x : piece.coords) {
+                    int tx = x.x + piece.position.x;
+                    int ty = x.y + piece.position.y;
+                    if (board.get(tx, ty) > -1) {
+                        move = true;
+                        piece.position.y--;
+                        break;
+                    }
+                }
+                if (!move)
+                    break;
+            }
+        }
         repaint();
     }
 
@@ -134,6 +164,12 @@ public class GamePanel extends StatePanel implements ActionListener {
             for (Point x : piece.coords) {
                 int tx = x.x + piece.position.x;
                 int ty = x.y + piece.position.y;
+                if (ty < 0) {
+                    // GAME OVER
+                    System.out.println("YOU LOSE SUCKER!");
+                    GameFrame.get().transition(new MainMenu());
+                    return;
+                }
                 board.set(tx, ty, piece.index);
             }
             // replace piece
@@ -149,6 +185,7 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     protected void replace() {
         piece = next;
+        piece.position.set(Board.BOARD_WIDTH / 2, 0);
         generateNext();
     }
 }
