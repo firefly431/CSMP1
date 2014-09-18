@@ -25,7 +25,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final Color EMPTY_COLOR = new Color(128, 128, 128);
 
     private Board board;
-    private Piece piece;
+    private Piece piece, next;
 
     private boolean running = true;
     private Timer timer;
@@ -34,8 +34,9 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     public GamePanel() {
         board = new Board();
-        piece = new Piece((int)(Math.random() * Piece.PIECE_NUM));
         timer = new Timer(DROP_DELAY, this);
+        generateNext();
+        replace();
     }
 
     public GamePanel(Board b) {
@@ -135,9 +136,19 @@ public class GamePanel extends StatePanel implements ActionListener {
                 int ty = x.y + piece.position.y;
                 board.set(tx, ty, piece.index);
                 // replace piece
+                replace();
             }
         } else {
             piece.position.y++;
         }
+    }
+
+    protected void generateNext() {
+        next = new Piece((int)(Math.random() * Piece.PIECE_NUM));
+    }
+
+    protected void replace() {
+        piece = next;
+        generateNext();
     }
 }
