@@ -30,14 +30,6 @@ public class Board {
                 grid[y][x] = -1;
             }
         }
-        //testing fill colors
-        grid[0][5] = 1;
-        grid[14][5] = 2;
-        grid[8][3] = 3;
-        grid[12][6] = 4;
-        grid[11][4] = 6;
-        grid[7][2] = 0;
-
     }
 
     public int get(int x, int y) {
