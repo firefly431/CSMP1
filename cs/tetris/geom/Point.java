@@ -29,4 +29,9 @@ public class Point {
         x = -1 * y;
         y = temp;
     }
+
+    public void set(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }
