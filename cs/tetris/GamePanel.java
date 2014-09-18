@@ -35,6 +35,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     public GamePanel() {
         board = new Board();
         timer = new Timer(DROP_DELAY, this);
+        timer.start();
         generateNext();
         replace();
     }
@@ -148,6 +149,7 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         movePieceDown();
+        repaint();
     }
 
     protected void movePieceDown() {
