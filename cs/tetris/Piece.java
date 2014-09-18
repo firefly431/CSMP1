@@ -62,23 +62,5 @@ public class Piece {
                 p.rotatePointCounterClockwise();
         }
     }
-
-    public void moveDown() {
-        for(Point p: coords) {
-            p.y -= 1;
-        }
-    }
-
-    public void moveLeft() {
-        for(Point p: coords) {
-            p.x -= 1;
-        }
-    }
-
-    public void moveRight() {
-        for(Point p: coords) {
-            p.x += 1;
-        }
-    }
 }
 
