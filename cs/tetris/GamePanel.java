@@ -134,10 +134,11 @@ public class GamePanel extends StatePanel implements ActionListener {
             for (Point x : piece.coords) {
                 int tx = x.x + piece.position.x;
                 int ty = x.y + piece.position.y;
+                System.out.printf("Setting (%d, %d) to %d", tx, ty, piece.index);
                 board.set(tx, ty, piece.index);
-                // replace piece
-                replace();
             }
+            // replace piece
+            replace();
         } else {
             piece.position.y++;
         }
