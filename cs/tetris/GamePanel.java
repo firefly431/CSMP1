@@ -209,7 +209,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                     if (ty < 0) {
                         // GAME OVER
                         System.out.println("YOU LOSE SUCKER!");
-                        GameFrame.get().transition(new GameOver());
+                        GameFrame.get().transition(new GameOver(board.score));
                         return;
                     }
                     board.set(tx, ty, piece.index);

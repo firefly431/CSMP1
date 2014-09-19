@@ -16,11 +16,11 @@ import javax.imageio.ImageIO;
  * @author s544545
  */
 public class GameOver extends StatePanel {
-
     protected static BufferedImage loseImg = null;
+    private int score;
 
-    public GameOver() {
-        //
+    public GameOver(int score) {
+        this.score = score;
     }
 
     public static void init() {
@@ -36,7 +36,7 @@ public class GameOver extends StatePanel {
     public void paint(Graphics g) {
         if (loseImg != null)
             g.drawImage(loseImg, 0, 0, this);
-        g.drawString("Your score was " + Board.score, GameFrame.WINDOW_WIDTH/2, GameFrame.WINDOW_HEIGHT- 50);
+        g.drawString("Your score was " + score, GameFrame.WINDOW_WIDTH/2, GameFrame.WINDOW_HEIGHT- 50);
     }
 
     @Override
