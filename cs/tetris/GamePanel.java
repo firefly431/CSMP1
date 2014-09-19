@@ -24,6 +24,8 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final Color BACKGROUND_COLOR = new Color(186, 186, 186);
     public static final Color EMPTY_COLOR = new Color(128, 128, 128);
 
+    
+
     private Board board;
     private Piece piece, next;
 
@@ -76,6 +78,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         }
         drawPiece(g, piece, BOARD_X, BOARD_Y);
+        g.drawString("" + Board.score, GameFrame.WINDOW_WIDTH/2 , 40);
     }
 
     @Override

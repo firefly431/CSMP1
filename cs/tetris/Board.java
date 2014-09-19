@@ -15,6 +15,8 @@ public class Board {
     public static int BOARD_HEIGHT = 20;
     public static int PIECE_SIZE = 20; // in pixels
 
+    public static int score =0;
+
     int[][] grid = new int[BOARD_HEIGHT][BOARD_WIDTH];
 
     public Board() {
@@ -62,6 +64,7 @@ public class Board {
                 for (int x = 0; x < BOARD_WIDTH; x++)
                     grid[0][x] = -1;
                 y++;
+                score += 100;
             }
         }
     }
