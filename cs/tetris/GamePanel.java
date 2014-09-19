@@ -27,10 +27,12 @@ public class GamePanel extends StatePanel implements ActionListener {
     private Board board;
     private Piece piece, next;
 
-    private boolean running = true;
     private Timer timer;
+    private long lastMovement = 0;
+    // used so that pieces will not drop until the player stops moving it
 
-    public static final int DROP_DELAY = 300;
+    public static final int DROP_DELAY = 800;
+    public static final int KEEP_ALIVE_NS = 800000000;
 
     public GamePanel() {
         board = new Board();
@@ -91,6 +93,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                     }
             }
             piece.position.x -= minx;
+            lastMovement = System.nanoTime();
         }
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             piece.position.x++;
@@ -105,6 +108,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                     }
             }
             piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
+            lastMovement = System.nanoTime();
         }
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             movePieceDown();
@@ -114,6 +118,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 piece.rotateCounterClockwise();
             else
                 piece.rotateClockwise();
+            lastMovement = System.nanoTime();
             // keep within bounds
             int maxx = Board.BOARD_WIDTH - 1;
             int minx = 0;
@@ -129,7 +134,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 for (Point x : piece.coords) {
                     int tx = x.x + piece.position.x;
                     int ty = x.y + piece.position.y;
-                    if (board.get(tx, ty) > -1) {
+                    if (board.get(tx, ty) > -1 || ty >= Board.BOARD_HEIGHT) {
                         move = true;
                         piece.position.y--;
                         break;
@@ -144,7 +149,7 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     @Override
     public void removed() {
-        running = false;
+        timer.stop();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -163,19 +168,21 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         }
         if (drop) {
-            for (Point x : piece.coords) {
-                int tx = x.x + piece.position.x;
-                int ty = x.y + piece.position.y;
-                if (ty < 0) {
-                    // GAME OVER
-                    System.out.println("YOU LOSE SUCKER!");
-                    GameFrame.get().transition(new MainMenu());
-                    return;
+            if (System.nanoTime() - lastMovement > KEEP_ALIVE_NS) {
+                for (Point x : piece.coords) {
+                    int tx = x.x + piece.position.x;
+                    int ty = x.y + piece.position.y;
+                    if (ty < 0) {
+                        // GAME OVER
+                        System.out.println("YOU LOSE SUCKER!");
+                        GameFrame.get().transition(new MainMenu());
+                        return;
+                    }
+                    board.set(tx, ty, piece.index);
                 }
-                board.set(tx, ty, piece.index);
+                // replace piece
+                replace();
             }
-            // replace piece
-            replace();
         } else {
             piece.position.y++;
         }
