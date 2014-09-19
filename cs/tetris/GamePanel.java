@@ -90,7 +90,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         }
         drawPiece(g, piece, BOARD_X, BOARD_Y);
-        g.drawString("" + Board.score, GameFrame.WINDOW_WIDTH/2 , 40);
+        g.drawString("" + board.getScore(), GameFrame.WINDOW_WIDTH/2 , 40);
         drawPiece(g, next, NEXT_X, NEXT_Y);
         drawPiece(g, hold, HOLD_X, HOLD_Y);
         g.setColor(Color.BLACK);

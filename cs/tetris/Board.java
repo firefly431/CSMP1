@@ -15,12 +15,13 @@ public class Board {
     public static int BOARD_HEIGHT = 20;
     public static int PIECE_SIZE = 20; // in pixels
 
-    public static int score =0;
+    protected int score;
 
     int[][] grid = new int[BOARD_HEIGHT][BOARD_WIDTH];
 
     public Board() {
         fill();
+        score = 0;
     }
 
     /**
@@ -32,6 +33,10 @@ public class Board {
                 grid[y][x] = -1;
             }
         }
+    }
+
+    public int getScore() {
+        return score;
     }
 
     public int get(int x, int y) {
@@ -55,6 +60,7 @@ public class Board {
     }
 
     public void clearLines() {
+        int increment = 0;
         for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
             if (isFull(y)) {
                 for (int j = y; j > 0; j--) {
@@ -64,7 +70,7 @@ public class Board {
                 for (int x = 0; x < BOARD_WIDTH; x++)
                     grid[0][x] = -1;
                 y++;
-                score += 100;
+                score += (increment += 100);
             }
         }
     }
