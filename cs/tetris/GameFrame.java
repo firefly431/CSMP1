@@ -36,6 +36,7 @@ public class GameFrame extends JFrame {
      */
     public void init() {
         MainMenu.init();
+        GameOver.init();
         currentPanel = new MainMenu();
         getContentPane().add(currentPanel);
         addKeyListener((KeyListener)currentPanel);
