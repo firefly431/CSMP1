@@ -182,6 +182,8 @@ public class GamePanel extends StatePanel implements ActionListener {
                 }
                 // replace piece
                 replace();
+                // clear lines
+                board.clearLines();
             }
         } else {
             piece.position.y++;
