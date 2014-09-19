@@ -90,15 +90,15 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         }
         drawPiece(g, piece, BOARD_X, BOARD_Y);
-<<<<<<< HEAD
+
         g.drawString("" + Board.score, GameFrame.WINDOW_WIDTH/2 , 40);
-=======
+
         drawPiece(g, next, NEXT_X, NEXT_Y);
         drawPiece(g, hold, HOLD_X, HOLD_Y);
         g.setColor(Color.BLACK);
         g.drawString("Next piece", NEXT_LABEL_X, NEXT_LABEL_Y);
         g.drawString("Held piece", HOLD_LABEL_X, HOLD_LABEL_Y);
->>>>>>> origin/master
+
     }
 
     @Override
