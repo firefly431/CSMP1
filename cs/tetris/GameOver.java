@@ -36,6 +36,7 @@ public class GameOver extends StatePanel {
     public void paint(Graphics g) {
         if (loseImg != null)
             g.drawImage(loseImg, 0, 0, this);
+        g.drawString("Your score was " + Board.score, GameFrame.WINDOW_WIDTH/2, GameFrame.WINDOW_HEIGHT- 50);
     }
 
     @Override
