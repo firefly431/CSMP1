@@ -20,6 +20,14 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final int BOARD_PIXEL_HEIGHT = Board.BOARD_HEIGHT * Board.PIECE_SIZE;
     public static final int BOARD_X = (GameFrame.WINDOW_WIDTH - BOARD_PIXEL_WIDTH) / 2;
     public static final int BOARD_Y = GameFrame.WINDOW_HEIGHT - BOARD_PIXEL_HEIGHT;
+    public static final int NEXT_LABEL_X = 20;
+    public static final int NEXT_LABEL_Y = 40;
+    public static final int NEXT_X = Board.PIECE_SIZE * 3 + NEXT_LABEL_X;
+    public static final int NEXT_Y = Board.PIECE_SIZE * 3 + NEXT_LABEL_Y;
+    public static final int HOLD_LABEL_X = 20;
+    public static final int HOLD_LABEL_Y = NEXT_LABEL_Y + Board.PIECE_SIZE * 8;
+    public static final int HOLD_X = Board.PIECE_SIZE * 3 + HOLD_LABEL_X;
+    public static final int HOLD_Y = Board.PIECE_SIZE * 3 + HOLD_LABEL_Y;
 
     public static final Color BACKGROUND_COLOR = new Color(186, 186, 186);
     public static final Color EMPTY_COLOR = new Color(128, 128, 128);
@@ -27,7 +35,8 @@ public class GamePanel extends StatePanel implements ActionListener {
     
 
     private Board board;
-    private Piece piece, next;
+    private Piece piece, next, hold;
+    private boolean canHold;
 
     private Timer timer;
     private long lastMovement = 0;
@@ -42,6 +51,8 @@ public class GamePanel extends StatePanel implements ActionListener {
         timer.start();
         generateNext();
         replace();
+        hold = null;
+        canHold = true;
     }
 
     public GamePanel(Board b) {
@@ -53,6 +64,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     }
 
     protected void drawPiece(Graphics g, Piece p, Point origin) {
+        if (p == null) return;
         g.setColor(Piece.piece_colors[p.index]);
         for (Point x : p.coords) {
             int px = origin.x + (p.position.x + x.x) * Board.PIECE_SIZE;
@@ -78,7 +90,15 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         }
         drawPiece(g, piece, BOARD_X, BOARD_Y);
+<<<<<<< HEAD
         g.drawString("" + Board.score, GameFrame.WINDOW_WIDTH/2 , 40);
+=======
+        drawPiece(g, next, NEXT_X, NEXT_Y);
+        drawPiece(g, hold, HOLD_X, HOLD_Y);
+        g.setColor(Color.BLACK);
+        g.drawString("Next piece", NEXT_LABEL_X, NEXT_LABEL_Y);
+        g.drawString("Held piece", HOLD_LABEL_X, HOLD_LABEL_Y);
+>>>>>>> origin/master
     }
 
     @Override
@@ -147,6 +167,20 @@ public class GamePanel extends StatePanel implements ActionListener {
                     break;
             }
         }
+        if (e.getKeyCode() == KeyEvent.VK_C) {
+            if (canHold) {
+                // hold
+                if (hold == null) {
+                    hold = next;
+                    generateNext();
+                }
+                Piece temp = piece;
+                replace(hold);
+                hold = temp;
+                hold.position.set(0, 0);
+            }
+            canHold = false;
+        }
         repaint();
     }
 
@@ -195,11 +229,19 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     protected void generateNext() {
         next = new Piece((int)(Math.random() * Piece.PIECE_NUM));
+        int nrots = (int)(Math.random() * 4);
+        for (int i = 0; i < nrots; i++)
+            next.rotateClockwise();
     }
 
     protected void replace() {
-        piece = next;
-        piece.position.set(Board.BOARD_WIDTH / 2, 0);
+        replace(next);
         generateNext();
+        canHold = true;
+    }
+
+    protected void replace(Piece with) {
+        piece = with;
+        piece.position.set(Board.BOARD_WIDTH / 2, 0);
     }
 }
