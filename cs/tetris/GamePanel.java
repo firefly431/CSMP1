@@ -33,8 +33,7 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     public static final Color BACKGROUND_COLOR = new Color(186, 186, 186);
     public static final Color EMPTY_COLOR = new Color(128, 128, 128);
-
-    
+    public static final Color TEXT_COLOR = new Color(0, 0, 0);
 
     private Board board;
     private Piece piece, next, hold;
@@ -92,12 +91,16 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         }
         drawPiece(g, piece, BOARD_X, BOARD_Y);
-        g.drawString("" + board.getScore(), GameFrame.WINDOW_WIDTH/2 , 40);
         drawPiece(g, next, NEXT_X, NEXT_Y);
         drawPiece(g, hold, HOLD_X, HOLD_Y);
-        g.setColor(Color.BLACK);
-        g.drawString("Next piece", NEXT_LABEL_X, NEXT_LABEL_Y);
-        g.drawString("Held piece", HOLD_LABEL_X, HOLD_LABEL_Y);
+        g.setColor(TEXT_COLOR);
+        g.setFont(GameFrame.PLAY_16);
+        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+            RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        g.drawString("NEXT PIECE", NEXT_LABEL_X, NEXT_LABEL_Y);
+        g.drawString("HELD PIECE", HOLD_LABEL_X, HOLD_LABEL_Y);
+        // TODO: score stuff on right
+        g.drawString("SCORE: " + board.getScore(), GameFrame.WINDOW_WIDTH/2, 40);
     }
 
     @Override
