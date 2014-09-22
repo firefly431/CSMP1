@@ -43,21 +43,24 @@ public class GamePanel extends StatePanel implements ActionListener {
     private long lastMovement = 0;
     // used so that pieces will not drop until the player stops moving it
 
+    private int score;
+
     public static final int DROP_DELAY = 800;
     public static final int KEEP_ALIVE_NS = 800000000;
 
     public GamePanel() {
-        board = new Board();
+        this(new Board());
+    }
+
+    public GamePanel(Board b) {
+        board = b;
         timer = new Timer(DROP_DELAY, this);
         timer.start();
         generateNext();
         replace();
         hold = null;
         canHold = true;
-    }
-
-    public GamePanel(Board b) {
-        board = b;
+        score = 0;
     }
 
     protected void drawPiece(Graphics g, Piece p, int x, int y) {
@@ -100,7 +103,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.drawString("NEXT PIECE", NEXT_LABEL_X, NEXT_LABEL_Y);
         g.drawString("HELD PIECE", HOLD_LABEL_X, HOLD_LABEL_Y);
         // TODO: score stuff on right
-        g.drawString("SCORE: " + board.getScore(), GameFrame.WINDOW_WIDTH/2, 40);
+        g.drawString("SCORE: " + getScore(), GameFrame.WINDOW_WIDTH/2, 40);
     }
 
     @Override
@@ -214,7 +217,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                     if (ty < 0) {
                         // GAME OVER
                         System.out.println("YOU LOSE SUCKER!");
-                        GameFrame.get().transition(new GameOver(board.score));
+                        GameFrame.get().transition(new GameOver(getScore()));
                         return;
                     }
                     board.set(tx, ty, piece.index);
@@ -222,7 +225,8 @@ public class GamePanel extends StatePanel implements ActionListener {
                 // replace piece
                 replace();
                 // clear lines
-                board.clearLines();
+                int n = board.clearLines();
+                score += n * (n + 1) * 50;
             }
         } else {
             piece.position.y++;
@@ -245,5 +249,12 @@ public class GamePanel extends StatePanel implements ActionListener {
     protected void replace(Piece with) {
         piece = with;
         piece.position.set(Board.BOARD_WIDTH / 2, 0);
+    }
+
+    /**
+     * @return the score
+     */
+    public int getScore() {
+        return score;
     }
 }

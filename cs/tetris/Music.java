@@ -9,6 +9,7 @@ public class Music {
     private AtomicBoolean playing;
     private AudioInputStream in;
     private SourceDataLine out;
+    private double amplitude;
     public static final int BUFFER_SIZE = 4096;
     public Music(File f) throws FileNotFoundException, IOException, UnsupportedAudioFileException, LineUnavailableException {
         this(new RandomAccessFileInputStream(f));
