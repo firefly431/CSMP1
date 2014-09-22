@@ -93,6 +93,8 @@ public class GamePanel extends StatePanel implements ActionListener {
                 g.fillRect(px, py, Board.PIECE_SIZE - 1, Board.PIECE_SIZE - 1);
             }
         }
+        g.fillRect(30, 60, 150, 100);
+        g.fillRect(30, 210, 150, 100);
         drawPiece(g, piece, BOARD_X, BOARD_Y);
         drawPiece(g, next, NEXT_X, NEXT_Y);
         drawPiece(g, hold, HOLD_X, HOLD_Y);
