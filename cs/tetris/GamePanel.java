@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import cs.tetris.geom.Point;
+import cs.util.RandomAccessFileInputStream;
 import javax.swing.Timer;
 
 /**
@@ -48,6 +49,8 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final int DROP_DELAY = 800;
     public static final int KEEP_ALIVE_NS = 800000000;
 
+    private Music bg;
+
     public GamePanel() {
         this(new Board());
     }
@@ -61,6 +64,13 @@ public class GamePanel extends StatePanel implements ActionListener {
         hold = null;
         canHold = true;
         score = 0;
+        try {
+            bg = Music.createWithAmp(new RandomAccessFileInputStream("bg.wav"));
+            bg.setAmplitude(0.1);
+            bg.play_with_amplitude();
+        } catch (Exception e) {
+            bg = null;
+        }
     }
 
     protected void drawPiece(Graphics g, Piece p, int x, int y) {
@@ -194,6 +204,9 @@ public class GamePanel extends StatePanel implements ActionListener {
     @Override
     public void removed() {
         timer.stop();
+        if (bg != null) {
+            bg.fadeOut(10.0);
+        }
     }
 
     public void actionPerformed(ActionEvent e) {

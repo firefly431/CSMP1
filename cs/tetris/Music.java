@@ -138,4 +138,8 @@ mainloop:
             m.fadeOut(1.0);
         }
     }
+
+    void setAmplitude(double d) {
+        amplitude = d;
+    }
 }
