@@ -59,8 +59,8 @@ public class Board {
         return true;
     }
 
-    public void clearLines() {
-        int increment = 0;
+    public int clearLines() {
+        int cleared = 0;
         for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
             if (isFull(y)) {
                 for (int j = y; j > 0; j--) {
@@ -70,8 +70,9 @@ public class Board {
                 for (int x = 0; x < BOARD_WIDTH; x++)
                     grid[0][x] = -1;
                 y++;
-                score += (increment += 100);
+                cleared++;
             }
         }
+        return cleared;
     }
 }
