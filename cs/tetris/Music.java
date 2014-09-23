@@ -108,8 +108,10 @@ mainloop:
                             int fs = fadeSamples.get();
                             if (fs > 0) {
                                 amplitude -= 1.0 / fs;
-                                if (amplitude < 0)
+                                if (amplitude < 0) {
                                     playing.set(false);
+                                    amplitude = 0;
+                                }
                             }
                         }
                         out.write(buf, 0, BUFFER_SIZE);
