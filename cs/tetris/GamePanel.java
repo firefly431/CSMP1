@@ -216,7 +216,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     public void removed() {
         timer.stop();
         if (bg != null) {
-            bg.fadeOut(10.0);
+            bg.fadeOut(1.0);
         }
     }
 

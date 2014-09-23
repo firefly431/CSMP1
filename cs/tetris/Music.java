@@ -126,7 +126,7 @@ mainloop:
         playing.set(false);
     }
     public void fadeOut(double secs) {
-        fadeSamples.set((int)(secs * in.getFormat().getFrameRate()));
+        fadeSamples.set((int)(secs * in.getFormat().getFrameRate() / amplitude));
     }
     public static void main(String argv[]) throws Exception {
         Music m = Music.createWithAmp(new RandomAccessFileInputStream("bg.wav"));
