@@ -37,7 +37,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final Color TEXT_COLOR = new Color(0, 0, 0);
 
     private Board board;
-    private Piece piece, next, hold;
+    private Piece piece, next, hold, ghost;
     private boolean canHold;
 
     private Timer timer;
@@ -117,6 +117,8 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.drawString("HELD PIECE", HOLD_LABEL_X, HOLD_LABEL_Y);
         // TODO: score stuff on right
         g.drawString("SCORE: " + getScore(), GameFrame.WINDOW_WIDTH/2, 40);
+        ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        drawPiece(g, ghost, BOARD_X, BOARD_Y);
     }
 
     @Override
@@ -135,6 +137,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
             piece.position.x -= minx;
             lastMovement = System.nanoTime();
+            dropGhost();
         }
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             piece.position.x++;
@@ -150,6 +153,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
             piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
             lastMovement = System.nanoTime();
+            dropGhost();
         }
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             movePieceDown();
@@ -184,6 +188,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 if (!move)
                     break;
             }
+            dropGhost();
         }
         if (e.getKeyCode() == KeyEvent.VK_C) {
             if (canHold) {
@@ -198,6 +203,11 @@ public class GamePanel extends StatePanel implements ActionListener {
                 hold.position.set(0, 0);
             }
             canHold = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_SPACE) {
+            piece.position.set(ghost.position.x, ghost.position.y);
+            lastMovement -= KEEP_ALIVE_NS;
+            movePieceDown();
         }
         repaint();
     }
@@ -272,6 +282,8 @@ public class GamePanel extends StatePanel implements ActionListener {
     protected void replace(Piece with) {
         piece = with;
         piece.position.set(Board.BOARD_WIDTH / 2, 0);
+        ghost = (Piece)piece.clone();
+        dropGhost();
     }
 
     /**
@@ -279,5 +291,24 @@ public class GamePanel extends StatePanel implements ActionListener {
      */
     public int getScore() {
         return score;
+    }
+
+    private void dropGhost() {
+        ghost.position.set(piece.position.x, piece.position.y);
+        while (true) {
+            for (Point x : ghost.coords) {
+                int tx = x.x + ghost.position.x;
+                int ty = x.y + ghost.position.y;
+                if (ty >= Board.BOARD_HEIGHT) {
+                    ghost.position.y--;
+                    return;
+                }
+                if (board.get(tx, ty) >= 0) {
+                    ghost.position.y--;
+                    return;
+                }
+            }
+            ghost.position.y++;
+        }
     }
 }

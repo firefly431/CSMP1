@@ -12,7 +12,7 @@ import cs.tetris.geom.Point;
  *
  * @author s506571
  */
-public class Piece {
+public class Piece implements Cloneable {
     public static final int PIECE_I = 0;
     public static final int PIECE_S = 1;
     public static final int PIECE_Z = 2;
@@ -61,6 +61,13 @@ public class Piece {
         for(Point p : coords) {
             p.rotatePointCounterClockwise();
         }
+    }
+
+    @Override
+    public Object clone() {
+        Piece p = new Piece(index, position.x, position.y);
+        System.arraycopy(coords, 0, p.coords, 0, 4);
+        return p;
     }
 }
 
