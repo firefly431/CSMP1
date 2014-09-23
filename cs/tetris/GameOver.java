@@ -36,7 +36,7 @@ public class GameOver extends StatePanel {
     public void paint(Graphics g) {
         if (loseImg != null)
             g.drawImage(loseImg, 0, 0, this);
-        g.setFont(GameFrame.PLAY_16);
+        g.setFont(GameFrame.PLAY_BODY);
         g.drawString("Your score was: " + score, GameFrame.WINDOW_WIDTH/2, GameFrame.WINDOW_HEIGHT- 50);
     }
 

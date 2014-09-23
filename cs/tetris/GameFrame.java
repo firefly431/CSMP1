@@ -16,7 +16,7 @@ public class GameFrame extends JFrame {
     public static final int WINDOW_HEIGHT = 480;
     private StatePanel currentPanel;
 
-    public static Font PLAY_16;
+    public static Font PLAY_BODY;
     public static Font PLAY_48;
 
     // allow other classes to access the main frame
@@ -42,14 +42,20 @@ public class GameFrame extends JFrame {
     public void init() {
         MainMenu.init();
         GameOver.init();
+        try {
+            Sounds.init();
+        } catch (Exception e) {
+            System.err.println(e);
+            System.err.println("Failed to load sounds");
+        }
         // load font
         try {
             Font play_base = Font.createFont(Font.TRUETYPE_FONT, new File("play.ttf"));
             // derive 16pt and 48pt fonts
-            PLAY_16 = play_base.deriveFont(Font.PLAIN, 16);
+            PLAY_BODY = play_base.deriveFont(Font.PLAIN, 24);
             PLAY_48 = play_base.deriveFont(Font.PLAIN, 48);
         } catch (Exception e) {
-            PLAY_16 = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+            PLAY_BODY = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
             PLAY_48 = new Font(Font.SANS_SERIF, Font.PLAIN, 48);
         }
         currentPanel = new MainMenu();

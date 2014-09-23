@@ -6,14 +6,31 @@
 package cs.tetris;
 
 import javax.sound.sampled.*;
+import java.io.File;
 
 /**
  *
  * @author s506571
  */
 public class Sounds {
-    public static Clip AHH, AWW_YEAH, PSSHOOO, TETRIS, TETRIS1, WEEE, WOOO;
-    public static void init() {
-        //
+    enum Sound {
+        AHH, AWW_YEAH, PSHHOOO, TERIS, TETRIS1, WEEE, WOOO;
+        private Clip sound;
+        public String getFileName() {
+            return name().toLowerCase().replace('_', ' ') + ".wav";
+        }
+        public void init() throws Exception {
+            AudioInputStream sndIn = AudioSystem.getAudioInputStream(new File(getFileName()));
+            sound = AudioSystem.getClip();
+            sound.open(sndIn);
+        }
+        public void play() {
+            if (sound != null)
+                sound.start();
+        }
+    }
+    public static void init() throws Exception {
+        for (Sound s : Sound.values())
+            s.init();
     }
 }

@@ -41,6 +41,7 @@ public class MainMenu extends StatePanel {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             GameFrame.get().transition(new GamePanel());
+            Sounds.Sound.WOOO.play();
         }
     }
 }

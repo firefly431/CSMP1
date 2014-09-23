@@ -109,7 +109,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         drawPiece(g, next, NEXT_X, NEXT_Y);
         drawPiece(g, hold, HOLD_X, HOLD_Y);
         g.setColor(TEXT_COLOR);
-        g.setFont(GameFrame.PLAY_16);
+        g.setFont(GameFrame.PLAY_BODY);
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
             RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         g.drawString("NEXT PIECE", NEXT_LABEL_X, NEXT_LABEL_Y);
@@ -242,6 +242,13 @@ public class GamePanel extends StatePanel implements ActionListener {
                 // clear lines
                 int n = board.clearLines();
                 score += n * (n + 1) * 50;
+                if (n > 0 && n < 4) {
+                    Sounds.Sound.AWW_YEAH.play();
+                }
+                if (n == 4) {
+                    Sounds.Sound.TERIS.play();
+                    Sounds.Sound.WOOO.play();
+                }
             }
         } else {
             piece.position.y++;
