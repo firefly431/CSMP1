@@ -34,6 +34,8 @@ public class GameOver extends StatePanel {
 
     @Override
     public void paint(Graphics g) {
+        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+            RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         if (loseImg != null)
             g.drawImage(loseImg, 0, 0, this);
         g.setFont(GameFrame.PLAY_BODY);
