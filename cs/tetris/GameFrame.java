@@ -42,6 +42,7 @@ public class GameFrame extends JFrame {
      */
     public void init() {
         MainMenu.init();
+        ControlsScreen.init();
         GameOver.init();
         try {
             Sounds.init();

@@ -16,16 +16,16 @@ import javax.imageio.ImageIO;
  *
  * @author s506571
  */
-public class MainMenu extends StatePanel {
-    protected static BufferedImage menuImg = null;
+public class ControlsScreen extends StatePanel {
+    protected static BufferedImage controlsImg = null;
 
-    public MainMenu() {
+    public ControlsScreen() {
         //
     }
 
     public static void init() {
         try {
-            menuImg = ImageIO.read(new File("menu.png"));
+            controlsImg = ImageIO.read(new File("control.png"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Could not load menu image");
@@ -34,17 +34,14 @@ public class MainMenu extends StatePanel {
 
     @Override
     public void paint(Graphics g) {
-        if (menuImg != null)
-            g.drawImage(menuImg, 0, 0, this);
+        if (controlsImg != null)
+            g.drawImage(controlsImg, 0, 0, this);
     }
 
+    @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            GameFrame.get().transition(new GamePanel());
-            Sounds.Sound.WOOO.play();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_C) {
-            GameFrame.get().transition(new ControlsScreen());
+            GameFrame.get().transition(new MainMenu());
             Sounds.Sound.WOOO.play();
         }
     }
