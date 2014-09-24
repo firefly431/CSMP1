@@ -31,10 +31,13 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final int HOLD_LABEL_Y = NEXT_LABEL_Y + Board.PIECE_SIZE * 8;
     public static final int HOLD_X = Board.PIECE_SIZE * 3 + HOLD_LABEL_X;
     public static final int HOLD_Y = Board.PIECE_SIZE * 3 + HOLD_LABEL_Y;
+    public static final int BOARD_RT_X = BOARD_X + BOARD_PIXEL_WIDTH;
+    public static final int SCORE_PANEL_X = BOARD_RT_X + 20;
+    public static final int SCORE_PANEL_Y = 40;
 
-    public static final Color BACKGROUND_COLOR = new Color(186, 186, 186);
+    public static final Color BACKGROUND_COLOR = new Color(96, 96, 96);
     public static final Color EMPTY_COLOR = new Color(128, 128, 128);
-    public static final Color TEXT_COLOR = new Color(0, 0, 0);
+    public static final Color TEXT_COLOR = new Color(255, 255, 255);
 
     private Board board;
     private Piece piece, next, hold, ghost;
@@ -45,8 +48,10 @@ public class GamePanel extends StatePanel implements ActionListener {
     // used so that pieces will not drop until the player stops moving it
 
     private int score;
+    private int level;
+    private int linesCleared;
+    private int linesLevel;
 
-    public static final int DROP_DELAY = 800;
     public static final int KEEP_ALIVE_NS = 800000000;
 
     private Music bg;
@@ -57,13 +62,14 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     public GamePanel(Board b) {
         board = b;
-        timer = new Timer(DROP_DELAY, this);
+        timer = new Timer(1000, this);
         timer.start();
         generateNext();
         replace();
         hold = null;
         canHold = true;
-        score = 0;
+        score = linesCleared = linesLevel = 0;
+        level = 1;
         try {
             bg = Music.createWithAmp(new RandomAccessFileInputStream("bg.wav"));
             bg.setAmplitude(0.1);
@@ -71,6 +77,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         } catch (Exception e) {
             bg = null;
         }
+        setTimer(level);
     }
 
     protected void drawPiece(Graphics g, Piece p, int x, int y) {
@@ -116,7 +123,11 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.drawString("NEXT PIECE", NEXT_LABEL_X, NEXT_LABEL_Y);
         g.drawString("HELD PIECE", HOLD_LABEL_X, HOLD_LABEL_Y);
         // TODO: score stuff on right
-        g.drawString("SCORE: " + getScore(), GameFrame.WINDOW_WIDTH/2, 40);
+        g.drawString("SCORE: " + getScore(), SCORE_PANEL_X, SCORE_PANEL_Y);
+        g.drawString("LEVEL: " + level, SCORE_PANEL_X, SCORE_PANEL_Y + 30);
+        g.setFont(GameFrame.PLAY_SMALL);
+        g.drawString("LINES CLEARED: " + linesCleared, SCORE_PANEL_X, SCORE_PANEL_Y + 60);
+        g.drawString("LINES TO NEXT LEVEL: " + (10 - linesLevel), SCORE_PANEL_X, SCORE_PANEL_Y + 90);
         ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
         drawPiece(g, ghost, BOARD_X, BOARD_Y);
     }
@@ -252,14 +263,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 replace();
                 // clear lines
                 int n = board.clearLines();
-                score += n * (n + 1) * 50;
-                if (n > 0 && n < 4) {
-                    Sounds.Sound.AWW_YEAH.play();
-                }
-                if (n == 4) {
-                    Sounds.Sound.TERIS.play();
-                    Sounds.Sound.WOOO.play();
-                }
+                clearedLines(n);
             }
         } else {
             piece.position.y++;
@@ -310,5 +314,30 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
             ghost.position.y++;
         }
+    }
+
+    private void clearedLines(int n) {
+        score += n * (n + 1) * 50;
+        if (n > 0 && n < 4) {
+            Sounds.Sound.AWW_YEAH.play();
+        }
+        if (n == 4) {
+            Sounds.Sound.TERIS.play();
+            Sounds.Sound.WOOO.play();
+        }
+        linesCleared += n;
+        linesLevel += n;
+        if (linesLevel >= 10 && level < 20) {
+            linesLevel -= 10;
+            level++;
+            setTimer(level);
+            if (level == 20) {
+                Sounds.Sound.YOU_WIN.play();
+            }
+        }
+    }
+
+    private void setTimer(int level) {
+        timer.setDelay((int)((22750 - 1150 * level) / 27.0));
     }
 }

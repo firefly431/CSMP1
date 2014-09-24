@@ -14,7 +14,7 @@ import java.io.File;
  */
 public class Sounds {
     enum Sound {
-        AHH, AWW_YEAH, PSHHOOO, TERIS, TETRIS1, WEEE, WOOO;
+        AHH, AWW_YEAH, PSHHOOO, TERIS, TETRIS1, WEEE, WOOO, YOU_WIN;
         private Clip sound;
         public String getFileName() {
             return name().toLowerCase().replace('_', ' ') + ".wav";
