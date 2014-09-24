@@ -45,6 +45,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     // used so that pieces will not drop until the player stops moving it
 
     private int score;
+    public boolean pause = false;
 
     public static final int DROP_DELAY = 800;
     public static final int KEEP_ALIVE_NS = 800000000;
@@ -123,91 +124,100 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            piece.position.x--;
-            int minx = 0;
-            for (Point x : piece.coords) {
-                if (x.x + piece.position.x < minx)
-                    minx = x.x + piece.position.x;
-                if (minx >= 0)
-                    if (board.get(x.x + piece.position.x, x.y + piece.position.y) > -1) {
-                        piece.position.x++;
-                        break;
-                    }
+        if (e.getKeyCode() == KeyEvent.VK_P) {
+                pause = !pause;
+                if(pause)
+                    timer.stop();
+                else
+                    timer.start();
             }
-            piece.position.x -= minx;
-            lastMovement = System.nanoTime();
-            dropGhost();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            piece.position.x++;
-            int maxx = Board.BOARD_WIDTH - 1;
-            for (Point x : piece.coords) {
-                if (x.x + piece.position.x > maxx)
-                    maxx = x.x + piece.position.x;
-                if (maxx <= Board.BOARD_WIDTH - 1)
-                    if (board.get(x.x + piece.position.x, x.y + piece.position.y) > -1) {
-                        piece.position.x--;
-                        break;
-                    }
-            }
-            piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
-            lastMovement = System.nanoTime();
-            dropGhost();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            movePieceDown();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_Z || e.getKeyCode() == KeyEvent.VK_X) {
-            if (e.getKeyCode() == KeyEvent.VK_Z)
-                piece.rotateCounterClockwise();
-            else
-                piece.rotateClockwise();
-            lastMovement = System.nanoTime();
-            // keep within bounds
-            int maxx = Board.BOARD_WIDTH - 1;
-            int minx = 0;
-            for (Point x : piece.coords) {
-                if (x.x + piece.position.x > maxx)
-                    maxx = x.x + piece.position.x;
-                if (x.x + piece.position.x < minx)
-                    minx = x.x + piece.position.x;
-            }
-            piece.position.x -= (maxx - Board.BOARD_WIDTH + 1) + minx;
-            while (true) {
-                boolean move = false;
+        if(!pause) {
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                piece.position.x--;
+                int minx = 0;
                 for (Point x : piece.coords) {
-                    int tx = x.x + piece.position.x;
-                    int ty = x.y + piece.position.y;
-                    if (board.get(tx, ty) > -1 || ty >= Board.BOARD_HEIGHT) {
-                        move = true;
-                        piece.position.y--;
-                        break;
+                    if (x.x + piece.position.x < minx)
+                        minx = x.x + piece.position.x;
+                    if (minx >= 0)
+                        if (board.get(x.x + piece.position.x, x.y + piece.position.y) > -1) {
+                            piece.position.x++;
+                            break;
+                        }
+                }
+                piece.position.x -= minx;
+                lastMovement = System.nanoTime();
+                dropGhost();
+            }
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                piece.position.x++;
+                int maxx = Board.BOARD_WIDTH - 1;
+                for (Point x : piece.coords) {
+                    if (x.x + piece.position.x > maxx)
+                        maxx = x.x + piece.position.x;
+                    if (maxx <= Board.BOARD_WIDTH - 1)
+                        if (board.get(x.x + piece.position.x, x.y + piece.position.y) > -1) {
+                            piece.position.x--;
+                            break;
+                        }
+                }
+                piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
+                lastMovement = System.nanoTime();
+                dropGhost();
+            }
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                movePieceDown();
+            }
+            if (e.getKeyCode() == KeyEvent.VK_Z || e.getKeyCode() == KeyEvent.VK_X) {
+                if (e.getKeyCode() == KeyEvent.VK_Z)
+                    piece.rotateCounterClockwise();
+                else
+                    piece.rotateClockwise();
+                lastMovement = System.nanoTime();
+                // keep within bounds
+                int maxx = Board.BOARD_WIDTH - 1;
+                int minx = 0;
+                for (Point x : piece.coords) {
+                    if (x.x + piece.position.x > maxx)
+                        maxx = x.x + piece.position.x;
+                    if (x.x + piece.position.x < minx)
+                        minx = x.x + piece.position.x;
+                }
+                piece.position.x -= (maxx - Board.BOARD_WIDTH + 1) + minx;
+                while (true) {
+                    boolean move = false;
+                    for (Point x : piece.coords) {
+                        int tx = x.x + piece.position.x;
+                        int ty = x.y + piece.position.y;
+                        if (board.get(tx, ty) > -1 || ty >= Board.BOARD_HEIGHT) {
+                            move = true;
+                            piece.position.y--;
+                            break;
+                        }
                     }
+                    if (!move)
+                        break;
                 }
-                if (!move)
-                    break;
+                dropGhost();
             }
-            dropGhost();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_C) {
-            if (canHold) {
-                // hold
-                if (hold == null) {
-                    hold = next;
-                    generateNext();
+            if (e.getKeyCode() == KeyEvent.VK_C) {
+                if (canHold) {
+                    // hold
+                    if (hold == null) {
+                        hold = next;
+                        generateNext();
+                    }
+                    Piece temp = piece;
+                    replace(hold);
+                    hold = temp;
+                    hold.position.set(0, 0);
                 }
-                Piece temp = piece;
-                replace(hold);
-                hold = temp;
-                hold.position.set(0, 0);
+                canHold = false;
             }
-            canHold = false;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_SPACE) {
-            piece.position.set(ghost.position.x, ghost.position.y);
-            lastMovement -= KEEP_ALIVE_NS;
-            movePieceDown();
+            if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_SPACE) {
+                piece.position.set(ghost.position.x, ghost.position.y);
+                lastMovement -= KEEP_ALIVE_NS;
+                movePieceDown();
+            }
         }
         repaint();
     }
