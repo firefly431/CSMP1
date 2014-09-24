@@ -48,13 +48,10 @@ public class GamePanel extends StatePanel implements ActionListener {
     // used so that pieces will not drop until the player stops moving it
 
     private int score;
-<<<<<<< HEAD
     private int level;
     private int linesCleared;
     private int linesLevel;
-=======
     public boolean pause = false;
->>>>>>> origin/master
 
     public static final int KEEP_ALIVE_NS = 800000000;
 
