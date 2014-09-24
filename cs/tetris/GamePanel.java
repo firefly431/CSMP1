@@ -35,7 +35,11 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final int SCORE_PANEL_X = BOARD_RT_X + 20;
     public static final int SCORE_PANEL_Y = 40;
 
-    public static final Color BACKGROUND_COLOR = new Color(96, 96, 96);
+    private Color backgroundColor;
+    public static final Color BACKGROUNDS[] = {
+        new Color(96, 96, 96), new Color(102, 71, 71), new Color(71, 71, 102),
+        new Color(71, 102, 71)
+    };
     public static final Color EMPTY_COLOR = new Color(128, 128, 128);
     public static final Color TEXT_COLOR = new Color(255, 255, 255);
 
@@ -79,6 +83,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             bg = null;
         }
         setTimer(level);
+        setColor(level);
     }
 
     protected void drawPiece(Graphics g, Piece p, int x, int y) {
@@ -97,7 +102,7 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     @Override
     public void paint(Graphics g) {
-        g.setColor(BACKGROUND_COLOR);
+        g.setColor(backgroundColor);
         g.fillRect(0, 0, GameFrame.WINDOW_WIDTH, GameFrame.WINDOW_HEIGHT);
         for (int y = 0; y < Board.BOARD_HEIGHT; y++) {
             for (int x = 0; x < Board.BOARD_WIDTH; x++) {
@@ -344,10 +349,15 @@ public class GamePanel extends StatePanel implements ActionListener {
             if (level == 20) {
                 Sounds.Sound.YOU_WIN.play();
             }
+            //
         }
     }
 
     private void setTimer(int level) {
         timer.setDelay((int)((22750 - 1150 * level) / 27.0));
+    }
+
+    private void setColor(int level) {
+        backgroundColor = BACKGROUNDS[level % BACKGROUNDS.length];
     }
 }
