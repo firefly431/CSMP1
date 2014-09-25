@@ -12,6 +12,8 @@ import java.awt.event.*;
 
 import cs.tetris.geom.Point;
 import cs.util.RandomAccessFileInputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
 import javax.swing.Timer;
 
 /**
@@ -23,14 +25,14 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final int BOARD_PIXEL_HEIGHT = Board.BOARD_HEIGHT * Board.PIECE_SIZE;
     public static final int BOARD_X = (GameFrame.WINDOW_WIDTH - BOARD_PIXEL_WIDTH) / 2;
     public static final int BOARD_Y = GameFrame.WINDOW_HEIGHT - BOARD_PIXEL_HEIGHT;
-    public static final int NEXT_LABEL_X = 20;
-    public static final int NEXT_LABEL_Y = 40;
-    public static final int NEXT_X = Board.PIECE_SIZE * 3 + NEXT_LABEL_X;
-    public static final int NEXT_Y = Board.PIECE_SIZE * 3 + NEXT_LABEL_Y;
     public static final int HOLD_LABEL_X = 20;
-    public static final int HOLD_LABEL_Y = NEXT_LABEL_Y + Board.PIECE_SIZE * 8;
+    public static final int HOLD_LABEL_Y = 40;
     public static final int HOLD_X = Board.PIECE_SIZE * 3 + HOLD_LABEL_X;
     public static final int HOLD_Y = Board.PIECE_SIZE * 3 + HOLD_LABEL_Y;
+    public static final int NEXT_LABEL_X = 20;
+    public static final int NEXT_LABEL_Y = HOLD_LABEL_Y + Board.PIECE_SIZE * 8;
+    public static final int NEXT_X = Board.PIECE_SIZE * 3 + NEXT_LABEL_X;
+    public static final int NEXT_Y = Board.PIECE_SIZE * 3 + NEXT_LABEL_Y;
     public static final int BOARD_RT_X = BOARD_X + BOARD_PIXEL_WIDTH;
     public static final int SCORE_PANEL_X = BOARD_RT_X + 20;
     public static final int SCORE_PANEL_Y = 40;
@@ -44,7 +46,8 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final Color TEXT_COLOR = new Color(255, 255, 255);
 
     private Board board;
-    private Piece piece, next, hold, ghost;
+    private Piece piece, hold, ghost;
+    private LinkedList<Piece> next;
     private boolean canHold;
 
     private Timer timer;
@@ -58,6 +61,8 @@ public class GamePanel extends StatePanel implements ActionListener {
     public boolean pause = false;
 
     public static final int KEEP_ALIVE_NS = 800000000;
+    public static final int PEEK_NUM = Piece.PIECE_NUM;
+    public static final int PEEK_SIZE = 10;
 
     private Music bg;
 
@@ -69,6 +74,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         board = b;
         timer = new Timer(1000, this);
         timer.start();
+        next = new LinkedList<Piece>();
         generateNext();
         replace();
         hold = null;
@@ -90,13 +96,21 @@ public class GamePanel extends StatePanel implements ActionListener {
         drawPiece(g, p, new Point(x, y));
     }
 
+    protected void drawPiece(Graphics g, Piece p, int x, int y, int size) {
+        drawPiece(g, p, new Point(x, y), size);
+    }
+
     protected void drawPiece(Graphics g, Piece p, Point origin) {
+        drawPiece(g, p, origin, Board.PIECE_SIZE);
+    }
+
+    protected void drawPiece(Graphics g, Piece p, Point origin, int size) {
         if (p == null) return;
         g.setColor(Piece.piece_colors[p.index]);
         for (Point x : p.coords) {
-            int px = origin.x + (p.position.x + x.x) * Board.PIECE_SIZE;
-            int py = origin.y + (p.position.y + x.y) * Board.PIECE_SIZE;
-            g.fillRect(px, py, Board.PIECE_SIZE - 1, Board.PIECE_SIZE - 1);
+            int px = origin.x + (p.position.x + x.x) * size;
+            int py = origin.y + (p.position.y + x.y) * size;
+            g.fillRect(px, py, size - 1, size - 1);
         }
     }
 
@@ -120,7 +134,21 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.fillRect(NEXT_X - Board.PIECE_SIZE * 2, NEXT_Y - Board.PIECE_SIZE * 2, Board.PIECE_SIZE * 5, Board.PIECE_SIZE * 5);
         g.fillRect(HOLD_X - Board.PIECE_SIZE * 2, HOLD_Y - Board.PIECE_SIZE * 2, Board.PIECE_SIZE * 5, Board.PIECE_SIZE * 5);
         drawPiece(g, piece, BOARD_X, BOARD_Y);
-        drawPiece(g, next, NEXT_X, NEXT_Y);
+        // draw next pieces
+        Iterator<Piece> it = next.descendingIterator();
+        Point npos = new Point(NEXT_X, NEXT_Y);
+        boolean first = true;
+        for (int i = 0; i < PEEK_NUM; i++) {
+            Piece p = it.next();
+            if (first) {
+                first = false;
+                drawPiece(g, p, npos);
+                npos.y += Board.PIECE_SIZE * 5;
+            } else {
+                drawPiece(g, p, npos, PEEK_SIZE);
+                npos.y += PEEK_SIZE * 5;
+            }
+        }
         drawPiece(g, hold, HOLD_X, HOLD_Y);
         g.setColor(TEXT_COLOR);
         g.setFont(GameFrame.PLAY_BODY);
@@ -219,7 +247,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 if (canHold) {
                     // hold
                     if (hold == null) {
-                        hold = next;
+                        hold = next.removeLast();
                         generateNext();
                     }
                     Piece temp = piece;
@@ -286,14 +314,28 @@ public class GamePanel extends StatePanel implements ActionListener {
     }
 
     protected void generateNext() {
-        next = new Piece((int)(Math.random() * Piece.PIECE_NUM));
-        int nrots = (int)(Math.random() * 4);
-        for (int i = 0; i < nrots; i++)
-            next.rotateClockwise();
+        if (next.size() >= PEEK_NUM)
+            return;
+        // generate a shuffled array of [0, PIECE_NUM)
+        int shuffle[] = new int[Piece.PIECE_NUM];
+        for (int n = 1; n <= Piece.PIECE_NUM; n++) {
+            // insert n-1 at a random position [0, n)
+            int pos = (int)(Math.random() * n);
+            if (pos + 1 != n)
+                shuffle[n - 1] = shuffle[pos];
+            shuffle[pos] = n - 1;
+        }
+        for (int p : shuffle) {
+            Piece pp = new Piece(p);
+            int snum = (int)(Math.random() * 4);
+            for (int i = 0; i < snum; i++)
+                pp.rotateClockwise();
+            next.addFirst(pp);
+        }
     }
 
     protected void replace() {
-        replace(next);
+        replace(next.removeLast());
         generateNext();
         canHold = true;
     }
