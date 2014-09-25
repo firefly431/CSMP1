@@ -347,6 +347,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             linesLevel -= 10;
             level++;
             setTimer(level);
+            setColor(level);
             if (level == 20) {
                 Sounds.Sound.YOU_WIN.play();
             }
