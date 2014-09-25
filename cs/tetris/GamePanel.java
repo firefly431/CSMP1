@@ -274,12 +274,11 @@ public class GamePanel extends StatePanel implements ActionListener {
                     }
                     board.set(tx, ty, piece.index);
                 }
-                // replace piece
-                replace();
                 // clear lines
                 int n = board.clearLines();
                 clearedLines(n);
-                dropGhost();
+                // replace piece
+                replace();
             }
         } else {
             piece.position.y++;
