@@ -29,7 +29,7 @@ public class MainMenu extends StatePanel {
     public void paint(Graphics g) {
         g.setFont(GameFrame.PLAY_48);
         FontMetrics m48 = g.getFontMetrics();
-        g.drawString("TETRIS", HALF_X - m48.stringWidth("TETRIS"), TITLE_Y);
+        g.drawString("TETRIS", HALF_X - m48.stringWidth("TETRIS") / 2, TITLE_Y);
     }
 
     public void keyReleased(KeyEvent e) {
