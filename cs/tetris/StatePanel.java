@@ -7,15 +7,21 @@ package cs.tetris;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
 
 /**
  *
  * @author s506571
  */
-public abstract class StatePanel extends JPanel implements KeyListener {
+public class StatePanel extends JPanel implements KeyListener, MouseListener {
+    public StatePanel() {
+        addMouseListener(this);
+    }
+
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(GameFrame.WINDOW_WIDTH, GameFrame.WINDOW_HEIGHT);
@@ -30,5 +36,17 @@ public abstract class StatePanel extends JPanel implements KeyListener {
 
     public void keyReleased(KeyEvent e) {}
 
-    public void removed() {}
+    public void removed() {
+        removeMouseListener(this);
+    }
+
+    public void mouseClicked(MouseEvent e) {}
+
+    public void mousePressed(MouseEvent e) {}
+
+    public void mouseReleased(MouseEvent e) {}
+
+    public void mouseEntered(MouseEvent e) {}
+
+    public void mouseExited(MouseEvent e) {}
 }

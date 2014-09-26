@@ -7,35 +7,29 @@ package cs.tetris;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
  *
  * @author s506571
  */
 public class MainMenu extends StatePanel {
-    protected static BufferedImage menuImg = null;
-
+    public static final int HALF_X = GameFrame.WINDOW_WIDTH / 2;
+    public static final int HALF_Y = GameFrame.WINDOW_HEIGHT / 2;
+    public static final int TITLE_Y = 80;
+    
     public MainMenu() {
-        //
+        super();
     }
 
     public static void init() {
-        try {
-            menuImg = ImageIO.read(new File("menu.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Could not load menu image");
-        }
+        // nothing really
     }
 
     @Override
     public void paint(Graphics g) {
-        if (menuImg != null)
-            g.drawImage(menuImg, 0, 0, this);
+        g.setFont(GameFrame.PLAY_48);
+        FontMetrics m48 = g.getFontMetrics();
+        g.drawString("TETRIS", HALF_X - m48.stringWidth("TETRIS"), TITLE_Y);
     }
 
     public void keyReleased(KeyEvent e) {

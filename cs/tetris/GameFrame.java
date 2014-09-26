@@ -41,9 +41,6 @@ public class GameFrame extends JFrame {
      * Initialize components and game
      */
     public void init() {
-        MainMenu.init();
-        ControlsScreen.init();
-        GameOver.init();
         try {
             Sounds.init();
         } catch (Exception e) {
@@ -58,9 +55,13 @@ public class GameFrame extends JFrame {
             PLAY_SMALL = play_base.deriveFont(Font.PLAIN, 16);
             PLAY_48 = play_base.deriveFont(Font.PLAIN, 48);
         } catch (Exception e) {
-            PLAY_BODY = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+            PLAY_BODY = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
+            PLAY_SMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
             PLAY_48 = new Font(Font.SANS_SERIF, Font.PLAIN, 48);
         }
+        MainMenu.init();
+        ControlsScreen.init();
+        GameOver.init();
         currentPanel = new MainMenu();
         getContentPane().add(currentPanel);
         addKeyListener((KeyListener)currentPanel);
