@@ -114,6 +114,22 @@ public class GamePanel extends StatePanel implements ActionListener {
         setColor(level);
         leftK = rightK = upK = downK = zK = xK = false;
     }
+    
+    protected void drawBlock(Graphics g, Point p, Color c, int size) {
+        drawBlock(g, p.x, p.y, c, size);
+    }
+
+    protected void drawBlock(Graphics g, int px, int py, Color c, int size) {
+        int bwidth = size / 8;
+        g.setColor(c);
+        g.fillRect(px, py, size - 1, size - 1);
+        g.setColor(c.darker());
+        //g.fillRect(px + bwidth, py + bwidth, size - 1 - bwidth - bwidth, size - 1 - bwidth - bwidth);
+        g.fillRect(px + bwidth, py + bwidth, size - 1 - bwidth - bwidth, bwidth);
+        g.fillRect(px + bwidth, py + size - 1 - bwidth - bwidth, size - 1 - bwidth - bwidth, bwidth);
+        g.fillRect(px + bwidth, py + bwidth + bwidth, bwidth, size - 1 - bwidth - bwidth - bwidth - bwidth);
+        g.fillRect(px + size - 1 - bwidth - bwidth, py + bwidth + bwidth, bwidth, size - 1 - bwidth - bwidth - bwidth - bwidth);
+    }
 
     protected void drawPiece(Graphics g, Piece p, int x, int y) {
         drawPiece(g, p, new Point(x, y));
@@ -129,17 +145,10 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     protected void drawPiece(Graphics g, Piece p, Point origin, int size) {
         if (p == null) return;
-        Color c = Piece.piece_colors[p.index];
         for (Point x : p.coords) {
             int px = origin.x + (p.position.x + x.x) * size;
             int py = origin.y + (p.position.y + x.y) * size;
-            int bwidth = size / 8;
-            g.setColor(c);
-            g.fillRect(px, py, size - 1, size - 1);
-            g.setColor(c.darker());
-            g.fillRect(px + bwidth, py + bwidth, size - 1 - bwidth - bwidth, size - 1 - bwidth - bwidth);
-            g.setColor(c);
-            g.fillRect(px + bwidth + bwidth, py + bwidth + bwidth, size - 1 - bwidth- bwidth- bwidth- bwidth, size - 1- bwidth - bwidth- bwidth- bwidth);
+            drawBlock(g, px, py, Piece.piece_colors[p.index], size);
         }
     }
 
@@ -152,11 +161,11 @@ public class GamePanel extends StatePanel implements ActionListener {
                 int px = x * Board.PIECE_SIZE + BOARD_X;
                 int py = y * Board.PIECE_SIZE + BOARD_Y;
                 int p = board.get(x, y);
-                if (p == -1)
+                if (p == -1) {
                     g.setColor(EMPTY_COLOR);
-                else
-                    g.setColor(Piece.piece_colors[p]);
-                g.fillRect(px, py, Board.PIECE_SIZE - 1, Board.PIECE_SIZE - 1);
+                    g.fillRect(px, py, Board.PIECE_SIZE - 1, Board.PIECE_SIZE - 1);
+                } else
+                    drawBlock(g, px, py, Piece.piece_colors[p], Board.PIECE_SIZE);
             }
         }
         g.setColor(EMPTY_COLOR);
