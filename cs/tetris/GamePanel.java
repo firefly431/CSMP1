@@ -44,6 +44,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     };
     public static final Color EMPTY_COLOR = new Color(128, 128, 128);
     public static final Color TEXT_COLOR = new Color(255, 255, 255);
+    public static final Color DISABLED_COLOR = new Color(128, 128, 128);
 
     private Board board;
     private Piece piece, hold, ghost;
@@ -51,7 +52,6 @@ public class GamePanel extends StatePanel implements ActionListener {
     private boolean canHold;
 
     private Timer timer;
-    private long lastMovement = 0;
     // used so that pieces will not drop until the player stops moving it
 
     private int score;
@@ -62,22 +62,30 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     private boolean leftK, rightK, upK, downK, zK, xK;
     private Timer controlTimer;
+    private Timer newPieceTimer;
+    private Timer cementTimer;
+    private Piece cementPiece;
 
-    public static final int KEEP_ALIVE_NS = 800000000;
+    public static final int KEEP_ALIVE_MS = 800;
     public static final int PEEK_NUM = Piece.PIECE_NUM;
     public static final int PEEK_SIZE = 10;
     public static final int CONTROL_DELAY_MS = 120;
+    public static final int NEW_PIECE_MS = 500;
 
     private Music bg;
 
     public GamePanel() {
-        this(new Board());
+        this(1);
     }
 
-    public GamePanel(Board b) {
+    public GamePanel(int level) {
+        this(new Board(), level);
+    }
+
+    public GamePanel(Board b, int level) {
         board = b;
         timer = new Timer(1000, this);
-        timer.start();
+        timer.setCoalesce(false); // oh god if not
         controlTimer = new Timer(CONTROL_DELAY_MS, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (upK)
@@ -95,6 +103,26 @@ public class GamePanel extends StatePanel implements ActionListener {
                 repaint();
             }
         });
+        controlTimer.setCoalesce(false);
+        newPieceTimer = new Timer(0, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                replace(next.removeLast());
+                generateNext();
+                canHold = true;
+                timer.start();
+                pause = false;
+            }
+        });
+        newPieceTimer.setInitialDelay(NEW_PIECE_MS);
+        newPieceTimer.setRepeats(false);
+        cementTimer = new Timer(0, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (cementPiece == piece)
+                    cement();
+            }
+        });
+        cementTimer.setInitialDelay(KEEP_ALIVE_MS);
+        cementTimer.setRepeats(false);
         controlTimer.setInitialDelay(0);
         next = new LinkedList<Piece>();
         generateNext();
@@ -102,7 +130,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         hold = null;
         canHold = true;
         score = linesCleared = linesLevel = 0;
-        level = 1;
+        this.level = level;
         try {
             bg = Music.createWithAmp(new RandomAccessFileInputStream("bg.wav"));
             bg.setAmplitude(0.1);
@@ -131,19 +159,19 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.fillRect(px + size - 1 - bwidth - bwidth, py + bwidth + bwidth, bwidth, size - 1 - bwidth - bwidth - bwidth - bwidth);
     }
 
-    protected void drawPiece(Graphics g, Piece p, int x, int y) {
+    public void drawPiece(Graphics g, Piece p, int x, int y) {
         drawPiece(g, p, new Point(x, y));
     }
 
-    protected void drawPiece(Graphics g, Piece p, int x, int y, int size) {
+    public void drawPiece(Graphics g, Piece p, int x, int y, int size) {
         drawPiece(g, p, new Point(x, y), size);
     }
 
-    protected void drawPiece(Graphics g, Piece p, Point origin) {
+    public void drawPiece(Graphics g, Piece p, Point origin) {
         drawPiece(g, p, origin, Board.PIECE_SIZE);
     }
 
-    protected void drawPiece(Graphics g, Piece p, Point origin, int size) {
+    public void drawPiece(Graphics g, Piece p, Point origin, int size) {
         if (p == null) return;
         for (Point x : p.coords) {
             int px = origin.x + (p.position.x + x.x) * size;
@@ -199,7 +227,8 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.drawString("LEVEL: " + level, SCORE_PANEL_X, SCORE_PANEL_Y + 30);
         g.setFont(GameFrame.PLAY_SMALL);
         g.drawString("LINES CLEARED: " + linesCleared, SCORE_PANEL_X, SCORE_PANEL_Y + 60);
-        g.drawString("LINES TO NEXT LEVEL: " + (10 - linesLevel), SCORE_PANEL_X, SCORE_PANEL_Y + 90);
+        if (level < 20)
+            g.drawString("LINES TO NEXT LEVEL: " + (10 - linesLevel), SCORE_PANEL_X, SCORE_PANEL_Y + 90);
         ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
         drawPiece(g, ghost, BOARD_X, BOARD_Y);
     }
@@ -218,7 +247,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                     }
             }
             piece.position.x -= minx;
-            lastMovement = System.nanoTime();
+            cementTimer.stop();
             dropGhost();
         }
         if (kc == KeyEvent.VK_RIGHT) {
@@ -234,7 +263,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                     }
             }
             piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
-            lastMovement = System.nanoTime();
+            cementTimer.stop();
             dropGhost();
         }
         if (kc == KeyEvent.VK_DOWN) {
@@ -245,7 +274,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 piece.rotateCounterClockwise();
             else
                 piece.rotateClockwise();
-            lastMovement = System.nanoTime();
+            cementTimer.stop();
             // keep within bounds
             int maxx = Board.BOARD_WIDTH - 1;
             int minx = 0;
@@ -293,17 +322,16 @@ public class GamePanel extends StatePanel implements ActionListener {
                     hold = next.removeLast();
                     generateNext();
                 }
-                Piece temp = piece;
-                replace(hold);
-                hold = temp;
+                next.addLast(hold);
+                hold = piece;
                 hold.position.set(0, 0);
+                replace();
             }
             canHold = false;
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             piece.position.set(ghost.position.x, ghost.position.y);
-            lastMovement -= KEEP_ALIVE_NS;
-            movePieceDown();
+            cement();
         }
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
@@ -382,6 +410,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        if (cementTimer.isRunning()) return;
         movePieceDown();
         repaint();
     }
@@ -397,23 +426,9 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         }
         if (drop) {
-            if (System.nanoTime() - lastMovement > KEEP_ALIVE_NS) {
-                for (Point x : piece.coords) {
-                    int tx = x.x + piece.position.x;
-                    int ty = x.y + piece.position.y;
-                    if (ty < 0) {
-                        // GAME OVER
-                        System.out.println("YOU LOSE SUCKER!");
-                        GameFrame.get().transition(new GameOver(getScore()));
-                        return;
-                    }
-                    board.set(tx, ty, piece.index);
-                }
-                // clear lines
-                int n = board.clearLines();
-                clearedLines(n);
-                // replace piece
-                replace();
+            if (!cementTimer.isRunning() && cementPiece != piece) {
+                cementTimer.start();
+                cementPiece = piece;
             }
         } else {
             piece.position.y++;
@@ -442,14 +457,15 @@ public class GamePanel extends StatePanel implements ActionListener {
     }
 
     protected void replace() {
-        replace(next.removeLast());
-        generateNext();
-        canHold = true;
+        newPieceTimer.start();
+        pause = true;
+        timer.stop();
+        piece = ghost = null;
     }
 
     protected void replace(Piece with) {
         piece = with;
-        piece.position.set(Board.BOARD_WIDTH / 2, 0);
+        piece.position.set(Board.BOARD_WIDTH / 2, -3);
         ghost = (Piece)piece.clone();
         dropGhost();
     }
@@ -504,10 +520,32 @@ public class GamePanel extends StatePanel implements ActionListener {
     }
 
     private void setTimer(int level) {
-        timer.setDelay((int)((22750 - 1150 * level) / 27.0));
+        if (level >= 20)
+            timer.setDelay(10);
+        else
+            timer.setDelay((int)((22750 - 1150 * level) / 27.0));
     }
 
     private void setColor(int level) {
         backgroundColor = BACKGROUNDS[level % BACKGROUNDS.length];
+    }
+
+    private void cement() {
+        for (Point x : piece.coords) {
+            int tx = x.x + piece.position.x;
+            int ty = x.y + piece.position.y;
+            if (ty < 0) {
+                // GAME OVER
+                System.out.println("YOU LOSE SUCKER!");
+                GameFrame.get().transition(new GameOver(getScore()));
+                return;
+            }
+            board.set(tx, ty, piece.index);
+        }
+        // clear lines
+        int n = board.clearLines();
+        clearedLines(n);
+        // replace piece
+        replace();
     }
 }

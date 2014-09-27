@@ -17,7 +17,7 @@ public class GameFrame extends JFrame {
     private StatePanel currentPanel;
 
     public static Font PLAY_BODY;
-    public static Font PLAY_48;
+    public static Font PLAY_TITLE;
     public static Font PLAY_SMALL;
 
     // allow other classes to access the main frame
@@ -53,11 +53,11 @@ public class GameFrame extends JFrame {
             // derive 16pt and 48pt fonts
             PLAY_BODY = play_base.deriveFont(Font.PLAIN, 24);
             PLAY_SMALL = play_base.deriveFont(Font.PLAIN, 16);
-            PLAY_48 = play_base.deriveFont(Font.PLAIN, 48);
+            PLAY_TITLE = play_base.deriveFont(Font.PLAIN, 72);
         } catch (Exception e) {
             PLAY_BODY = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
             PLAY_SMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
-            PLAY_48 = new Font(Font.SANS_SERIF, Font.PLAIN, 48);
+            PLAY_TITLE = new Font(Font.SANS_SERIF, Font.PLAIN, 72);
         }
         MainMenu.init();
         ControlsScreen.init();

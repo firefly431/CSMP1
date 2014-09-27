@@ -39,7 +39,7 @@ public class ControlsScreen extends StatePanel {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             GameFrame.get().transition(new MainMenu());
             Sounds.Sound.WOOO.play();
