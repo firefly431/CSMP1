@@ -5,14 +5,16 @@
 
 package cs.tetris;
 
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.Timer;
 
 /**
  *
  * @author s506571
  */
-public class MainMenu extends StatePanel {
+public class MainMenu extends StatePanel implements ActionListener {
     public static final int HALF_X = GameFrame.WINDOW_WIDTH / 2;
     public static final int HALF_Y = GameFrame.WINDOW_HEIGHT / 2;
     public static final int TITLE_Y = HALF_Y - 80;
@@ -26,11 +28,46 @@ public class MainMenu extends StatePanel {
     public static final int ARW1_X[] = {HALF_X - ARW_D, HALF_X - ARW_D - ARW_XS, HALF_X - ARW_D};
     public static final int ARW2_X[] = {HALF_X + ARW_D, HALF_X + ARW_D + ARW_XS, HALF_X + ARW_D};
 
+    public static final int FALL_DELAY_MS = 100;
+    public static final int FRAMES_NEW = 5;
+    public static final int MAX_OFFSET_X = (int)((double)HALF_X / Board.PIECE_SIZE + 0.5);
+
     private int level = 1;
     private int selected = 0;
+
+    private LinkedList<Piece> falling;
+    private Timer fallTimer;
+    private int new_frame;
     
     public MainMenu() {
         super();
+        falling = new LinkedList<Piece>();
+        fallTimer = new Timer(FALL_DELAY_MS, this);
+        fallTimer.setInitialDelay(0);
+        fallTimer.start();
+        new_frame = 0;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (++new_frame >= FRAMES_NEW) {
+            // new piece
+            Piece p = new Piece((int)(Math.random() * Piece.PIECE_NUM));
+            int nr = (int)(Math.random() * 4);
+            for (int i = 0; i < nr; i++)
+                p.rotateClockwise();
+            p.position.set((int)(Math.random() * MAX_OFFSET_X * 2 - MAX_OFFSET_X), -3);
+            falling.addFirst(p);
+            new_frame -= FRAMES_NEW;
+        }
+        ListIterator<Piece> it = falling.listIterator();
+        while (it.hasNext()) {
+            Piece p = it.next();
+            p.position.y++;
+            if (p.position.y >= Board.BOARD_HEIGHT + 3) {
+                it.remove();
+            }
+        }
+        repaint();
     }
 
     public static void init() {
@@ -44,6 +81,11 @@ public class MainMenu extends StatePanel {
         // draw background
         g.setColor(GamePanel.BACKGROUNDS[0]);
         g.fillRect(0, 0, GameFrame.WINDOW_WIDTH, GameFrame.WINDOW_HEIGHT);
+        // draw falling pieces
+        for (Piece p : falling) {
+            GamePanel.drawPiece(g, p, HALF_X, 0);
+        }
+        // draw text
         g.setFont(GameFrame.PLAY_TITLE);
         FontMetrics mt = g.getFontMetrics();
         g.setColor(GamePanel.TEXT_COLOR);

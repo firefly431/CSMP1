@@ -143,11 +143,11 @@ public class GamePanel extends StatePanel implements ActionListener {
         leftK = rightK = upK = downK = zK = xK = false;
     }
     
-    protected void drawBlock(Graphics g, Point p, Color c, int size) {
+    public static void drawBlock(Graphics g, Point p, Color c, int size) {
         drawBlock(g, p.x, p.y, c, size);
     }
 
-    protected void drawBlock(Graphics g, int px, int py, Color c, int size) {
+    public static void drawBlock(Graphics g, int px, int py, Color c, int size) {
         int bwidth = size / 8;
         g.setColor(c);
         g.fillRect(px, py, size - 1, size - 1);
@@ -159,19 +159,19 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.fillRect(px + size - 1 - bwidth - bwidth, py + bwidth + bwidth, bwidth, size - 1 - bwidth - bwidth - bwidth - bwidth);
     }
 
-    public void drawPiece(Graphics g, Piece p, int x, int y) {
+    public static void drawPiece(Graphics g, Piece p, int x, int y) {
         drawPiece(g, p, new Point(x, y));
     }
 
-    public void drawPiece(Graphics g, Piece p, int x, int y, int size) {
+    public static void drawPiece(Graphics g, Piece p, int x, int y, int size) {
         drawPiece(g, p, new Point(x, y), size);
     }
 
-    public void drawPiece(Graphics g, Piece p, Point origin) {
+    public static void drawPiece(Graphics g, Piece p, Point origin) {
         drawPiece(g, p, origin, Board.PIECE_SIZE);
     }
 
-    public void drawPiece(Graphics g, Piece p, Point origin, int size) {
+    public static void drawPiece(Graphics g, Piece p, Point origin, int size) {
         if (p == null) return;
         for (Point x : p.coords) {
             int px = origin.x + (p.position.x + x.x) * size;
