@@ -86,6 +86,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         board = b;
         timer = new Timer(1000, this);
         timer.setCoalesce(false); // oh god if not
+        timer.start();
         controlTimer = new Timer(CONTROL_DELAY_MS, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (upK)
@@ -109,8 +110,6 @@ public class GamePanel extends StatePanel implements ActionListener {
                 replace(next.removeLast());
                 generateNext();
                 canHold = true;
-                timer.start();
-                pause = false;
             }
         });
         newPieceTimer.setInitialDelay(NEW_PIECE_MS);
@@ -234,6 +233,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     }
 
     public void doKey(int kc) {
+        if (piece == null) return;
         if (kc == KeyEvent.VK_LEFT) {
             piece.position.x--;
             int minx = 0;
@@ -248,6 +248,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
             piece.position.x -= minx;
             cementTimer.stop();
+            cementPiece = null;
             dropGhost();
         }
         if (kc == KeyEvent.VK_RIGHT) {
@@ -264,6 +265,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
             piece.position.x -= (maxx - Board.BOARD_WIDTH + 1);
             cementTimer.stop();
+            cementPiece = null;
             dropGhost();
         }
         if (kc == KeyEvent.VK_DOWN) {
@@ -275,6 +277,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             else
                 piece.rotateClockwise();
             cementTimer.stop();
+            cementPiece = null;
             // keep within bounds
             int maxx = Board.BOARD_WIDTH - 1;
             int minx = 0;
@@ -316,6 +319,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         }
         if (pause) return;
         if (e.getKeyCode() == KeyEvent.VK_C) {
+            if (piece == null) return;
             if (canHold) {
                 // hold
                 if (hold == null) {
@@ -330,6 +334,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             canHold = false;
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (piece == null) return;
             piece.position.set(ghost.position.x, ghost.position.y);
             cement();
         }
@@ -411,6 +416,7 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (cementTimer.isRunning()) return;
+        if (piece == null) return;
         movePieceDown();
         repaint();
     }
@@ -458,8 +464,6 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     protected void replace() {
         newPieceTimer.start();
-        pause = true;
-        timer.stop();
         piece = ghost = null;
     }
 
