@@ -38,6 +38,8 @@ public class MainMenu extends StatePanel implements ActionListener {
     private LinkedList<Piece> falling;
     private Timer fallTimer;
     private int new_frame;
+
+    private boolean controlsS = false;
     
     public MainMenu() {
         super();
@@ -85,6 +87,14 @@ public class MainMenu extends StatePanel implements ActionListener {
         for (Piece p : falling) {
             GamePanel.drawPiece(g, p, HALF_X, 0);
         }
+        if (controlsS) {
+            g.setFont(GameFrame.PLAY_TITLE);
+            g.setColor(GamePanel.TEXT_COLOR);
+            FontMetrics mt = g.getFontMetrics();
+            drawCenter(g, "CONTROLS", mt, 80);
+            drawControls(g);
+            return;
+        }
         // draw text
         g.setFont(GameFrame.PLAY_TITLE);
         FontMetrics mt = g.getFontMetrics();
@@ -102,12 +112,17 @@ public class MainMenu extends StatePanel implements ActionListener {
         g.setFont(GameFrame.PLAY_SMALL);
         mt = g.getFontMetrics();
         g.setColor(GamePanel.DISABLED_COLOR);
-        drawCenter(g, "UP/DOWN TO MOVE CURSOR", mt, GameFrame.WINDOW_HEIGHT - 48);
-        drawCenter(g, "LEFT/RIGHT TO CHANGE VALUE", mt, GameFrame.WINDOW_HEIGHT - 32);
-        drawCenter(g, "ENTER TO SELECT", mt, GameFrame.WINDOW_HEIGHT - 16);
+        drawCenter(g, "UP/DOWN TO MOVE CURSOR", mt, GameFrame.WINDOW_HEIGHT - 74);
+        drawCenter(g, "LEFT/RIGHT TO CHANGE VALUE", mt, GameFrame.WINDOW_HEIGHT - 58);
+        drawCenter(g, "ENTER TO SELECT", mt, GameFrame.WINDOW_HEIGHT - 42);
+        drawCenter(g, "COPYRIGHT \u00A9 2014 JAMES DONG AND THIENSON HO", mt, GameFrame.WINDOW_HEIGHT - 16);
     }
 
     public void keyPressed(KeyEvent e) {
+        if (controlsS) {
+            controlsS = false;
+            return;
+        }
         switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 if (selected == 0)
@@ -128,14 +143,35 @@ public class MainMenu extends StatePanel implements ActionListener {
                     GameFrame.get().transition(new GamePanel(level));
                 }
                 if (selected == 1) {
-                    GameFrame.get().transition(new ControlsScreen());
+                    controlsS = true;
                 }
                 break;
         }
         repaint();
     }
 
-    protected void drawCenter(Graphics g, String s, FontMetrics mt, int y) {
+    public static void drawCenter(Graphics g, String s, FontMetrics mt, int y) {
         g.drawString(s, HALF_X - mt.stringWidth(s) / 2, y);
+    }
+
+    public static final String controls[][] = {
+        {"Arrow Keys", "Move Piece"},
+        {"Space", "Hard Drop"},
+        {"Z", "Rotate Clockwise"},
+        {"X", "Rotate Counterclockwise"},
+        {"C", "Hold Piece"},
+        {"P", "Pause"},
+    };
+
+    public static void drawControls(Graphics g) {
+        g.setFont(GameFrame.PLAY_BODY);
+        g.setColor(GamePanel.TEXT_COLOR);
+        int y = 180;
+        FontMetrics fm = g.getFontMetrics();
+        for (String[] table : controls) {
+            g.drawString(table[0], 40, y);
+            g.drawString(table[1], GameFrame.WINDOW_WIDTH - 40 - fm.stringWidth(table[1]), y);
+            y += 30;
+        }
     }
 }

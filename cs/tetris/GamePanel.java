@@ -183,8 +183,12 @@ public class GamePanel extends StatePanel implements ActionListener {
     public void paint(Graphics g) {
         g.setColor(backgroundColor);
         g.fillRect(0, 0, GameFrame.WINDOW_WIDTH, GameFrame.WINDOW_HEIGHT);
+        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+            RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         if (pause) {
-            drawPauseScreen();
+            drawPauseScreen(g);
+            MainMenu.drawControls(g);
+            return;
         }
         for (int y = 0; y < Board.BOARD_HEIGHT; y++) {
             for (int x = 0; x < Board.BOARD_WIDTH; x++) {
@@ -220,8 +224,6 @@ public class GamePanel extends StatePanel implements ActionListener {
         drawPiece(g, hold, HOLD_X, HOLD_Y);
         g.setColor(TEXT_COLOR);
         g.setFont(GameFrame.PLAY_BODY);
-        ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-            RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         g.drawString("NEXT PIECE", NEXT_LABEL_X, NEXT_LABEL_Y);
         g.drawString("HELD PIECE", HOLD_LABEL_X, HOLD_LABEL_Y);
         // TODO: score stuff on right
@@ -556,7 +558,10 @@ public class GamePanel extends StatePanel implements ActionListener {
         replace();
     }
 
-    private void drawPauseScreen() {
-        //
+    public static void drawPauseScreen(Graphics g) {
+        g.setFont(GameFrame.PLAY_TITLE);
+        g.setColor(TEXT_COLOR);
+        FontMetrics mt = g.getFontMetrics();
+        MainMenu.drawCenter(g, "PAUSED", mt, 80);
     }
 }
