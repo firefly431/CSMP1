@@ -70,7 +70,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final int PEEK_NUM = Piece.PIECE_NUM;
     public static final int PEEK_SIZE = 10;
     public static final int CONTROL_DELAY_MS = 120;
-    public static final int NEW_PIECE_MS = 500;
+    public static final int NEW_PIECE_MS = 200;
 
     private Music bg;
 
@@ -183,6 +183,9 @@ public class GamePanel extends StatePanel implements ActionListener {
     public void paint(Graphics g) {
         g.setColor(backgroundColor);
         g.fillRect(0, 0, GameFrame.WINDOW_WIDTH, GameFrame.WINDOW_HEIGHT);
+        if (pause) {
+            drawPauseScreen();
+        }
         for (int y = 0; y < Board.BOARD_HEIGHT; y++) {
             for (int x = 0; x < Board.BOARD_WIDTH; x++) {
                 int px = x * Board.PIECE_SIZE + BOARD_X;
@@ -551,5 +554,9 @@ public class GamePanel extends StatePanel implements ActionListener {
         clearedLines(n);
         // replace piece
         replace();
+    }
+
+    private void drawPauseScreen() {
+        //
     }
 }
