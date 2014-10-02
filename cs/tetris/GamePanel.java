@@ -111,6 +111,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 generateNext();
                 if (canHold != 1)
                     canHold--;
+                System.out.println("canHold is "+canHold);
             }
         });
         newPieceTimer.setInitialDelay(NEW_PIECE_MS);
@@ -336,8 +337,8 @@ public class GamePanel extends StatePanel implements ActionListener {
                 hold = piece;
                 hold.position.set(0, 0);
                 replace();
+                canHold = 3;
             }
-            canHold = 3;
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (piece == null) return;
