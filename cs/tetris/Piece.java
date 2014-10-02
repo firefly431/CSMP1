@@ -51,12 +51,22 @@ public class Piece implements Cloneable {
         position = new Point(x, y);
     }
     
+    /**
+     * rotates all points within the piece 90 degrees to the right
+     * @see #rotateCounterClockwise()
+     * @inherit 
+     */
     public void rotateClockwise() {
         for(Point p : coords) {
             p.rotatePointClockwise();
         }
     }
-    
+
+    /**
+     * rotates all points within the piece 90 degrees to the left
+     * @see #rotateClockwise()
+     * @inherit
+     */
     public void rotateCounterClockwise() {
         for(Point p : coords) {
             p.rotatePointCounterClockwise();
