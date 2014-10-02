@@ -2,6 +2,10 @@ package cs.util;
 
 import java.io.*;
 
+/**
+ * Stupid class because there is none in the Java standard library
+ * @see RandomAccessFile
+ */
 public class RandomAccessFileInputStream extends InputStream {
     private RandomAccessFile raf;
     private long mark;

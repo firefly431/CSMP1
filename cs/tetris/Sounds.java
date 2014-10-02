@@ -9,10 +9,13 @@ import javax.sound.sampled.*;
 import java.io.File;
 
 /**
- *
- * @author s506571
+ * Sounds class contains sounds that can be played easily once
+ * init() is called.
  */
 public class Sounds {
+    /**
+     * Contains sounds to play
+     */
     enum Sound {
         AHH, AWW_YEAH, PSHHOOO, TERIS, TETRIS1, WEEE, WOOO, YOU_WIN;
         private Clip sound;
@@ -31,6 +34,10 @@ public class Sounds {
                 sound.start();
         }
     }
+    /**
+     * Initialize all the sounds
+     * @throws Exception
+     */
     public static void init() throws Exception {
         for (Sound s : Sound.values())
             s.init();

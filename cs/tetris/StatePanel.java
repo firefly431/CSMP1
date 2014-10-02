@@ -14,19 +14,28 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 
 /**
- *
- * @author s506571
+ * A StatePanel is a Panel that represents a game state.
+ * A StatePanel can listen to events and process them accordingly.
  */
 public class StatePanel extends JPanel implements KeyListener, MouseListener {
+    /**
+     * Constructor for a StatePanel
+     */
     public StatePanel() {
         addMouseListener(this);
     }
 
+    /**
+     * @inherit
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(GameFrame.WINDOW_WIDTH, GameFrame.WINDOW_HEIGHT);
     }
 
+    /**
+     * @inherit
+     */
     @Override
     public void paint(Graphics g) {}
 
@@ -36,6 +45,10 @@ public class StatePanel extends JPanel implements KeyListener, MouseListener {
 
     public void keyReleased(KeyEvent e) {}
 
+    /**
+     * Called when this panel is removed, panel should delete members
+     * and stop processes
+     */
     public void removed() {
         removeMouseListener(this);
     }
