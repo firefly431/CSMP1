@@ -49,7 +49,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     private Board board;
     private Piece piece, hold, ghost;
     private LinkedList<Piece> next;
-    private boolean canHold;
+    private int canHold;
 
     private Timer timer;
     // used so that pieces will not drop until the player stops moving it
@@ -109,7 +109,8 @@ public class GamePanel extends StatePanel implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 replace(next.removeLast());
                 generateNext();
-                canHold = true;
+                if (canHold != 1)
+                    canHold--;
             }
         });
         newPieceTimer.setInitialDelay(NEW_PIECE_MS);
@@ -127,7 +128,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         generateNext();
         replace();
         hold = null;
-        canHold = true;
+        canHold = 1;
         score = linesCleared = linesLevel = 0;
         this.level = level;
         try {
@@ -325,7 +326,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         if (pause) return;
         if (e.getKeyCode() == KeyEvent.VK_C) {
             if (piece == null) return;
-            if (canHold) {
+            if (canHold == 1) {
                 // hold
                 if (hold == null) {
                     hold = next.removeLast();
@@ -336,7 +337,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                 hold.position.set(0, 0);
                 replace();
             }
-            canHold = false;
+            canHold = 3;
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (piece == null) return;
