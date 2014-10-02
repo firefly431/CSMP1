@@ -227,7 +227,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.drawString("NEXT PIECE", NEXT_LABEL_X, NEXT_LABEL_Y);
         g.drawString("HELD PIECE", HOLD_LABEL_X, HOLD_LABEL_Y);
         // TODO: score stuff on right
-        g.drawString("SCORE: " + getScore(), SCORE_PANEL_X, SCORE_PANEL_Y);
+        g.drawString("SCORE: " + getScore(), SCORE_PANEL_X-200, SCORE_PANEL_Y);
         g.drawString("LEVEL: " + level, SCORE_PANEL_X, SCORE_PANEL_Y + 30);
         g.setFont(GameFrame.PLAY_SMALL);
         g.drawString("LINES CLEARED: " + linesCleared, SCORE_PANEL_X, SCORE_PANEL_Y + 60);
@@ -340,6 +340,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (piece == null) return;
+            score += (int)5 * (ghost.position.y - piece.position.y);
             piece.position.set(ghost.position.x, ghost.position.y);
             cement();
         }
@@ -444,6 +445,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         } else {
             piece.position.y++;
         }
+        score++;
     }
 
     protected void generateNext() {
@@ -506,7 +508,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     }
 
     private void clearedLines(int n) {
-        score += n * (n + 1) * 50;
+        score += n * (n + 1) * 250;
         if (n > 0 && n < 4) {
             Sounds.Sound.AWW_YEAH.play();
         }
