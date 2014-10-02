@@ -12,6 +12,7 @@ public class Music {
     private double amplitude;
     private AtomicInteger fadeSamples;
     public static final int BUFFER_SIZE = 4096;
+    public static AtomicBoolean global_mute = new AtomicBoolean(false);
     public Music(File f) throws FileNotFoundException, IOException, UnsupportedAudioFileException, LineUnavailableException {
         this(new RandomAccessFileInputStream(f));
     }
@@ -102,7 +103,7 @@ mainloop:
                         }
                         for (int i = 0; i < BUFFER_SIZE; i += 2) {
                             short a = (short)(((buf[i] & 0xFF) << 8) | (buf[i + 1] & 0xFF));
-                            a = (short)(a * amplitude);
+                            a = global_mute.get() ? 0 : (short)(a * amplitude);
                             buf[i] = (byte)((a >>> 8) & 0xFF);
                             buf[i + 1] = (byte)(a & 0xFF);
                             int fs = fadeSamples.get();

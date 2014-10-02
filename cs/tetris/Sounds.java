@@ -25,6 +25,8 @@ public class Sounds {
             sound.open(sndIn);
         }
         public void play() {
+            if (Music.global_mute.get())
+                return;
             if (sound != null)
                 sound.start();
         }

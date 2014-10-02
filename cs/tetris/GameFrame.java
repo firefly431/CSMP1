@@ -65,7 +65,27 @@ public class GameFrame extends JFrame {
         currentPanel = new MainMenu();
         getContentPane().add(currentPanel);
         addKeyListener((KeyListener)currentPanel);
+        addKeyListener(new KeyListener() {
+            public void keyTyped(KeyEvent e) {}
+
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_M) {
+                    boolean v;
+                    do {
+                        v = Music.global_mute.get();
+                    } while (!Music.global_mute.compareAndSet(v, !v));
+                    updateTitle(!v);
+                }
+            }
+
+            public void keyReleased(KeyEvent e) {}
+        });
         pack();
+        updateTitle(false);
+    }
+
+    protected void updateTitle(boolean mute) {
+        setTitle("Tetris! - Press M to " + (mute ? "unmute" : "mute"));
     }
 
     public JPanel getCurrentPanel() {

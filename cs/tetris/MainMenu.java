@@ -65,7 +65,7 @@ public class MainMenu extends StatePanel implements ActionListener {
         while (it.hasNext()) {
             Piece p = it.next();
             p.position.y++;
-            if (p.position.y >= Board.BOARD_HEIGHT + 3) {
+            if ((-3 + p.position.y) * Board.PIECE_SIZE > GameFrame.WINDOW_HEIGHT) {
                 it.remove();
             }
         }
