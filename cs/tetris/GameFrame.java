@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import java.io.File;
-
 /**
  * Main game window. Contains menu panel or board panel.
  */
@@ -49,7 +47,9 @@ public class GameFrame extends JFrame {
         }
         // load font
         try {
-            Font play_base = Font.createFont(Font.TRUETYPE_FONT, new File("play.ttf"));
+            // URL
+            Font play_base = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getClassLoader().getResourceAsStream("cs/tetris/play.ttf"));
+            // Font play_base = Font.createFont(Font.TRUETYPE_FONT, new File("play.ttf"));
             // derive 16pt and 48pt fonts
             PLAY_BODY = play_base.deriveFont(Font.PLAIN, 24);
             PLAY_SMALL = play_base.deriveFont(Font.PLAIN, 16);

@@ -20,10 +20,11 @@ public class Sounds {
         AHH, AWW_YEAH, PSHHOOO, TERIS, TETRIS1, WEEE, WOOO, YOU_WIN;
         private Clip sound;
         public String getFileName() {
-            return name().toLowerCase().replace('_', ' ') + ".wav";
+            return "cs/tetris/" + name().toLowerCase().replace('_', ' ') + ".wav";
         }
         public void init() throws Exception {
-            AudioInputStream sndIn = AudioSystem.getAudioInputStream(new File(getFileName()));
+            //AudioInputStream sndIn = AudioSystem.getAudioInputStream(new File(getFileName()));
+            AudioInputStream sndIn = AudioSystem.getAudioInputStream(getClass().getClassLoader().getResourceAsStream(getFileName()));
             sound = AudioSystem.getClip();
             sound.open(sndIn);
         }

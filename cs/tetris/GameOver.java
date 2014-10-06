@@ -25,7 +25,8 @@ public class GameOver extends StatePanel {
 
     public static void init() {
         try {
-            loseImg = ImageIO.read(new File("lose.png"));
+            //loseImg = ImageIO.read(new File("lose.png"));
+            loseImg = ImageIO.read(GameOver.class.getClassLoader().getResourceAsStream("cs/tetris/lose.png"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Could not load menu image");

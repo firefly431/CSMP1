@@ -28,7 +28,7 @@ public class Music {
         out = (SourceDataLine)AudioSystem.getLine(info);
         out.open(fmt);
     }
-    private Music() {
+    protected Music() {
         playing = new AtomicBoolean(false);
         fadeSamples = new AtomicInteger(0);
         amplitude = 1.0;

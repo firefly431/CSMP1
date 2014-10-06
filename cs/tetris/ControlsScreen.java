@@ -25,7 +25,8 @@ public class ControlsScreen extends StatePanel {
 
     public static void init() {
         try {
-            controlsImg = ImageIO.read(new File("control.png"));
+            //controlsImg = ImageIO.read(new File("control.png"));
+            controlsImg = ImageIO.read(ControlsScreen.class.getClassLoader().getResourceAsStream("cs/tetris/control.png"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Could not load menu image");
