@@ -5,6 +5,8 @@ import java.io.*;
 /**
  * Stupid class because there is none in the Java standard library
  * @see RandomAccessFile
+ * Literally all of these methods are just a wrapper around RAF
+ * implementing the InputStream methods
  */
 public class RandomAccessFileInputStream extends InputStream {
     private RandomAccessFile raf;

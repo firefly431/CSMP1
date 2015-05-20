@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package cs.tetris;
 
 import java.util.*;
@@ -11,13 +6,14 @@ import java.awt.event.*;
 import javax.swing.Timer;
 
 /**
- *
- * @author s506571
+ * Main menu screen
  */
 public class MainMenu extends StatePanel implements ActionListener {
+    // useful constants
     public static final int HALF_X = GameFrame.WINDOW_WIDTH / 2;
     public static final int HALF_Y = GameFrame.WINDOW_HEIGHT / 2;
     public static final int TITLE_Y = HALF_Y - 80;
+    // arrow positioning
     public static final int ARW_TOP = HALF_Y + 12;
     public static final int ARW_BOT = HALF_Y + 22;
     public static final int ARW_MID = (ARW_BOT + ARW_TOP) / 2;
@@ -28,17 +24,23 @@ public class MainMenu extends StatePanel implements ActionListener {
     public static final int ARW1_X[] = {HALF_X - ARW_D, HALF_X - ARW_D - ARW_XS, HALF_X - ARW_D};
     public static final int ARW2_X[] = {HALF_X + ARW_D, HALF_X + ARW_D + ARW_XS, HALF_X + ARW_D};
 
+    // delay for fall
     public static final int FALL_DELAY_MS = 100;
+    // frames until new piece
     public static final int FRAMES_NEW = 5;
     public static final int MAX_OFFSET_X = (int)((double)HALF_X / Board.PIECE_SIZE + 0.5);
 
+    // selected level
     private int level = 1;
+    // selected choice
     private int selected = 0;
 
+    // falling pieces
     private LinkedList<Piece> falling;
     private Timer fallTimer;
     private int new_frame;
 
+    // is this the controls screen
     private boolean controlsS = false;
     
     public MainMenu() {
@@ -50,6 +52,7 @@ public class MainMenu extends StatePanel implements ActionListener {
         new_frame = 0;
     }
 
+    // timer event
     public void actionPerformed(ActionEvent e) {
         if (++new_frame >= FRAMES_NEW) {
             // new piece
@@ -61,6 +64,7 @@ public class MainMenu extends StatePanel implements ActionListener {
             falling.addFirst(p);
             new_frame -= FRAMES_NEW;
         }
+        // move the pieces down
         ListIterator<Piece> it = falling.listIterator();
         while (it.hasNext()) {
             Piece p = it.next();
@@ -99,7 +103,7 @@ public class MainMenu extends StatePanel implements ActionListener {
         g.setFont(GameFrame.PLAY_TITLE);
         FontMetrics mt = g.getFontMetrics();
         g.setColor(GamePanel.TEXT_COLOR);
-        drawCenter(g, "TETRIS", mt, TITLE_Y);
+        drawCenter(g, "FALLING BLOCKS", mt, TITLE_Y);
         g.setFont(GameFrame.PLAY_BODY);
         mt = g.getFontMetrics();
         g.setColor(selected == 0 ? GamePanel.TEXT_COLOR : GamePanel.DISABLED_COLOR);
@@ -127,10 +131,15 @@ public class MainMenu extends StatePanel implements ActionListener {
             case KeyEvent.VK_LEFT:
                 if (selected == 0)
                     level = (level + 18) % 20 + 1;
+                // simplification of ((level - 1) + 19) % 20 + 1
+                // we subtract and add 1 because it's 1-based
+                // we add 19 instead of subtracting 1
+                // so that we don't go negative
                 break;
             case KeyEvent.VK_RIGHT:
                 if (selected == 0)
                     level = level % 20 + 1;
+                // similar to LEFT
                 break;
             case KeyEvent.VK_UP:
             case KeyEvent.VK_DOWN:
@@ -150,10 +159,12 @@ public class MainMenu extends StatePanel implements ActionListener {
         repaint();
     }
 
+    // utility
     public static void drawCenter(Graphics g, String s, FontMetrics mt, int y) {
         g.drawString(s, HALF_X - mt.stringWidth(s) / 2, y);
     }
 
+    // controls strings
     public static final String controls[][] = {
         {"Arrow Keys", "Move Piece"},
         {"Space", "Hard Drop"},
@@ -163,6 +174,7 @@ public class MainMenu extends StatePanel implements ActionListener {
         {"P", "Pause"},
     };
 
+    // draw some controls
     public static void drawControls(Graphics g) {
         g.setFont(GameFrame.PLAY_BODY);
         g.setColor(GamePanel.TEXT_COLOR);

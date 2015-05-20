@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package cs.tetris;
 
 import java.awt.*;
@@ -11,11 +6,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+
 /**
- *
- * @author s544545
+ * Game over screen
  */
 public class GameOver extends StatePanel {
+    // see controls screen; it's nearly identical
     protected static BufferedImage loseImg = null;
     private int score;
 
@@ -33,6 +29,7 @@ public class GameOver extends StatePanel {
         }
     }
 
+    // we draw the score in addition to the image
     @Override
     public void paint(Graphics g) {
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,

@@ -26,7 +26,7 @@ public class GameFrame extends JFrame {
     }
 
     public GameFrame() {
-        super("Tetris!");
+        super("Falling Blocks!");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         if (mainFrame != null) {
@@ -50,7 +50,7 @@ public class GameFrame extends JFrame {
             // URL
             Font play_base = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getClassLoader().getResourceAsStream("cs/tetris/play.ttf"));
             // Font play_base = Font.createFont(Font.TRUETYPE_FONT, new File("play.ttf"));
-            // derive 16pt and 48pt fonts
+            // derive body, small, title fonts
             PLAY_BODY = play_base.deriveFont(Font.PLAIN, 24);
             PLAY_SMALL = play_base.deriveFont(Font.PLAIN, 16);
             PLAY_TITLE = play_base.deriveFont(Font.PLAIN, 72);
@@ -59,6 +59,7 @@ public class GameFrame extends JFrame {
             PLAY_SMALL = new Font(Font.SANS_SERIF, Font.PLAIN, 16);
             PLAY_TITLE = new Font(Font.SANS_SERIF, Font.PLAIN, 72);
         }
+        // init the panels
         MainMenu.init();
         ControlsScreen.init();
         GameOver.init();
@@ -85,7 +86,7 @@ public class GameFrame extends JFrame {
     }
 
     protected void updateTitle(boolean mute) {
-        setTitle("Tetris! - Press M to " + (mute ? "unmute" : "mute"));
+        setTitle("Falling Blocks! - Press M to " + (mute ? "unmute" : "mute"));
     }
 
     public JPanel getCurrentPanel() {

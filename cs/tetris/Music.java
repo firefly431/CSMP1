@@ -5,13 +5,22 @@ import javax.sound.sampled.*;
 import cs.util.RandomAccessFileInputStream;
 import java.util.concurrent.atomic.*;
 
+// HERE BE DRAGONS
+// joking aside, this class is pretty complicated
 public class Music {
+    // we have threads so it has to be atomic
     private AtomicBoolean playing;
+    // input stream for the music file
     private AudioInputStream in;
+    // audio output line
     private SourceDataLine out;
+    // amplitude
     private double amplitude;
+    // fade time in samples
     private AtomicInteger fadeSamples;
+    // size of the audio buffer
     public static final int BUFFER_SIZE = 4096;
+    // whether or not music is muted (global)
     public static AtomicBoolean global_mute = new AtomicBoolean(false);
     public Music(File f) throws FileNotFoundException, IOException, UnsupportedAudioFileException, LineUnavailableException {
         this(new RandomAccessFileInputStream(f));
@@ -28,11 +37,13 @@ public class Music {
         out = (SourceDataLine)AudioSystem.getLine(info);
         out.open(fmt);
     }
+    // protect this one (used to implement subclasses or the below function)
     protected Music() {
         playing = new AtomicBoolean(false);
         fadeSamples = new AtomicInteger(0);
         amplitude = 1.0;
     }
+    // create a music file capable of being controlled by amplitude
     public static Music createWithAmp(RandomAccessFileInputStream f) throws Exception {
         Music m = new Music();
         AudioFormat fmt = new AudioFormat(44100f, 16, 1, true, true);
@@ -43,6 +54,8 @@ public class Music {
         m.out.open(fmt);
         return m;
     }
+    // see playWithAmp(), as this function just copies directly
+    // instead of processing
     public void play() throws IOException {
         playing.set(true);
         (new Thread(new Runnable() {
@@ -83,29 +96,41 @@ mainloop:
             @Override
             public void run() {
                 try {
+                    // start the output line
                     out.start();
+                    // buffer to hold our bytes
                     byte[] buf = new byte[BUFFER_SIZE];
                     int off = 0;
 mainloop:
+                    // while we're playing music
                     while (playing.get()) {
+                        // this is the offset off the byte buffer
                         off = 0;
+                        // read until buffer is full
                         while (off < BUFFER_SIZE) {
                             int read;
                             try {
+                                // bytes read
                                 read = in.read(buf, off, BUFFER_SIZE - off);
                                 if (read + off < BUFFER_SIZE)
-                                    in.reset();
+                                    in.reset(); // restart the in buffer
                             } catch (IOException e) {
                                 break mainloop;
                             }
                             if (read < 0) read = 0;
+                            // move offset
                             off += read;
                         }
+                        // write to the out line
                         for (int i = 0; i < BUFFER_SIZE; i += 2) {
+                            // endian-independent read
                             short a = (short)(((buf[i] & 0xFF) << 8) | (buf[i + 1] & 0xFF));
+                            // if mute, 0, else multiply a by amplitude
                             a = global_mute.get() ? 0 : (short)(a * amplitude);
+                            // write endian-independent
                             buf[i] = (byte)((a >>> 8) & 0xFF);
                             buf[i + 1] = (byte)(a & 0xFF);
+                            // if fade, decrease amplitude
                             int fs = fadeSamples.get();
                             if (fs > 0) {
                                 amplitude -= 1.0 / fs;
@@ -115,12 +140,17 @@ mainloop:
                                 }
                             }
                         }
+                        // write the buffer
                         out.write(buf, 0, BUFFER_SIZE);
                     }
                 } finally {
+                    // play all remaining samples
                     out.drain();
+                    // and close the line
                     out.close();
+                    // close the in stream
                     try {in.close();} catch (IOException e) {System.out.println("IE");}
+                    // whew!
                 }
             }
         })).start();

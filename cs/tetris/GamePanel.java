@@ -1,10 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-// TODO: MUSIC http://www3.ntu.edu.sg/home/ehchua/programming/java/J8c_PlayingSound.html
-
 package cs.tetris;
 
 import java.awt.*;
@@ -17,10 +10,10 @@ import java.util.LinkedList;
 import javax.swing.Timer;
 
 /**
- *
- * @author s506571
+ * Main Game Panel
  */
 public class GamePanel extends StatePanel implements ActionListener {
+    // these are self-explanatory
     public static final int BOARD_PIXEL_WIDTH = Board.BOARD_WIDTH * Board.PIECE_SIZE;
     public static final int BOARD_PIXEL_HEIGHT = Board.BOARD_HEIGHT * Board.PIECE_SIZE;
     public static final int BOARD_X = (GameFrame.WINDOW_WIDTH - BOARD_PIXEL_WIDTH) / 2;
@@ -37,6 +30,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     public static final int SCORE_PANEL_X = BOARD_RT_X + 20;
     public static final int SCORE_PANEL_Y = 40;
 
+    // color cycling
     private Color backgroundColor;
     public static final Color BACKGROUNDS[] = {
         new Color(96, 96, 96), new Color(102, 71, 71), new Color(71, 71, 102),
@@ -49,7 +43,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     private Board board;
     private Piece piece, hold, ghost;
     private LinkedList<Piece> next;
-    private int canHold;
+    private int canHold; // can we hold or have we already held
 
     private Timer timer;
     // used so that pieces will not drop until the player stops moving it
@@ -60,7 +54,9 @@ public class GamePanel extends StatePanel implements ActionListener {
     private int linesLevel;
     public boolean pause = false;
 
+    // key states
     private boolean leftK, rightK, upK, downK, zK, xK;
+    // timers
     private Timer controlTimer;
     private Timer newPieceTimer;
     private Timer cementTimer;
@@ -85,8 +81,9 @@ public class GamePanel extends StatePanel implements ActionListener {
     public GamePanel(Board b, int level) {
         board = b;
         timer = new Timer(1000, this);
-        timer.setCoalesce(false); // oh god if not
+        timer.setCoalesce(false); // disable buffering of timers
         timer.start();
+        // basically, have a consistent key repeat
         controlTimer = new Timer(CONTROL_DELAY_MS, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (upK)
@@ -105,17 +102,19 @@ public class GamePanel extends StatePanel implements ActionListener {
             }
         });
         controlTimer.setCoalesce(false);
+        // timer for new piece, self-explanatory
         newPieceTimer = new Timer(0, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 replace(next.removeLast());
                 generateNext();
                 if (canHold != 1)
                     canHold--;
-                System.out.println("canHold is "+canHold);
             }
         });
+        // this timer doesn't repeat but performs an action after NEW_PIECE_MS
         newPieceTimer.setInitialDelay(NEW_PIECE_MS);
         newPieceTimer.setRepeats(false);
+        // similar to this one, cements after some time
         cementTimer = new Timer(0, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (cementPiece == piece)
@@ -144,22 +143,37 @@ public class GamePanel extends StatePanel implements ActionListener {
         leftK = rightK = upK = downK = zK = xK = false;
     }
     
+    /**
+     * Draw a block
+     * @param g the Graphics to use when drawing
+     * @param p the Point at which to draw
+     * @param c the Color to use
+     * @param size the size of the block
+     */
     public static void drawBlock(Graphics g, Point p, Color c, int size) {
         drawBlock(g, p.x, p.y, c, size);
     }
 
+    /**
+     * Draw a block
+     * @param g the Graphics to use when drawing
+     * @param px the x coordinate
+     * @param py the y coordinate
+     * @param c the Color to use
+     * @param size the size of the block
+     */
     public static void drawBlock(Graphics g, int px, int py, Color c, int size) {
         int bwidth = size / 8;
         g.setColor(c);
         g.fillRect(px, py, size - 1, size - 1);
         g.setColor(c.darker());
-        //g.fillRect(px + bwidth, py + bwidth, size - 1 - bwidth - bwidth, size - 1 - bwidth - bwidth);
         g.fillRect(px + bwidth, py + bwidth, size - 1 - bwidth - bwidth, bwidth);
         g.fillRect(px + bwidth, py + size - 1 - bwidth - bwidth, size - 1 - bwidth - bwidth, bwidth);
         g.fillRect(px + bwidth, py + bwidth + bwidth, bwidth, size - 1 - bwidth - bwidth - bwidth - bwidth);
         g.fillRect(px + size - 1 - bwidth - bwidth, py + bwidth + bwidth, bwidth, size - 1 - bwidth - bwidth - bwidth - bwidth);
     }
 
+    // overloads of drawPiece
     public static void drawPiece(Graphics g, Piece p, int x, int y) {
         drawPiece(g, p, new Point(x, y));
     }
@@ -172,6 +186,13 @@ public class GamePanel extends StatePanel implements ActionListener {
         drawPiece(g, p, origin, Board.PIECE_SIZE);
     }
 
+    /**
+     * Draw a whole piece
+     * @param g the Graphics to use
+     * @param p the Piece to draw
+     * @param origin the origin point (0,0) of the piece
+     * @param size the size of the blocks
+     */
     public static void drawPiece(Graphics g, Piece p, Point origin, int size) {
         if (p == null) return;
         for (Point x : p.coords) {
@@ -185,6 +206,7 @@ public class GamePanel extends StatePanel implements ActionListener {
     public void paint(Graphics g) {
         g.setColor(backgroundColor);
         g.fillRect(0, 0, GameFrame.WINDOW_WIDTH, GameFrame.WINDOW_HEIGHT);
+        // make text pretty
         ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
             RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         if (pause) {
@@ -228,13 +250,13 @@ public class GamePanel extends StatePanel implements ActionListener {
         g.setFont(GameFrame.PLAY_BODY);
         g.drawString("NEXT PIECE", NEXT_LABEL_X, NEXT_LABEL_Y);
         g.drawString("HELD PIECE", HOLD_LABEL_X, HOLD_LABEL_Y);
-        // TODO: score stuff on right
         g.drawString("SCORE: " + getScore(), SCORE_PANEL_X-200, SCORE_PANEL_Y);
         g.drawString("LEVEL: " + level, SCORE_PANEL_X, SCORE_PANEL_Y + 30);
         g.setFont(GameFrame.PLAY_SMALL);
         g.drawString("LINES CLEARED: " + linesCleared, SCORE_PANEL_X, SCORE_PANEL_Y + 60);
         if (level < 20)
             g.drawString("LINES TO NEXT LEVEL: " + (10 - linesLevel), SCORE_PANEL_X, SCORE_PANEL_Y + 90);
+        // draw the ghost at 0.5 alpha
         ((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
         drawPiece(g, ghost, BOARD_X, BOARD_Y);
     }
@@ -245,6 +267,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             piece.position.x--;
             int minx = 0;
             for (Point x : piece.coords) {
+                // find the minimum x
                 if (x.x + piece.position.x < minx)
                     minx = x.x + piece.position.x;
                 if (minx >= 0)
@@ -253,12 +276,14 @@ public class GamePanel extends StatePanel implements ActionListener {
                         break;
                     }
             }
+            // correct piece position (don't go off the edge)
             piece.position.x -= minx;
             cementTimer.stop();
             cementPiece = null;
             dropGhost();
         }
         if (kc == KeyEvent.VK_RIGHT) {
+            // similar
             piece.position.x++;
             int maxx = Board.BOARD_WIDTH - 1;
             for (Point x : piece.coords) {
@@ -313,6 +338,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         }
     }
 
+    // keys that don't repeat
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_P) {
@@ -416,12 +442,14 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     @Override
     public void removed() {
+        // stop the timers and fade bg music
         timer.stop();
         if (bg != null) {
             bg.fadeOut(1.0);
         }
     }
 
+    // move piece down
     public void actionPerformed(ActionEvent e) {
         if (cementTimer.isRunning()) return;
         if (piece == null) return;
@@ -431,6 +459,7 @@ public class GamePanel extends StatePanel implements ActionListener {
 
     protected void movePieceDown() {
         boolean drop = false;
+        // check if we should start cementing
         for (Point x : piece.coords) {
             int tx = x.x + piece.position.x;
             int ty = x.y + piece.position.y + 1;
@@ -450,10 +479,12 @@ public class GamePanel extends StatePanel implements ActionListener {
         score++;
     }
 
+    // this generates a new batch of pieces when we're running low
     protected void generateNext() {
         if (next.size() >= PEEK_NUM)
             return;
         // generate a shuffled array of [0, PIECE_NUM)
+        // this is a variant of Fisher-Yates
         int shuffle[] = new int[Piece.PIECE_NUM];
         for (int n = 1; n <= Piece.PIECE_NUM; n++) {
             // insert n-1 at a random position [0, n)
@@ -464,6 +495,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         }
         for (int p : shuffle) {
             Piece pp = new Piece(p);
+            // rotate randomly
             int snum = (int)(Math.random() * 4);
             for (int i = 0; i < snum; i++)
                 pp.rotateClockwise();
@@ -471,11 +503,13 @@ public class GamePanel extends StatePanel implements ActionListener {
         }
     }
 
+    // replace with nothing
     protected void replace() {
         newPieceTimer.start();
         piece = ghost = null;
     }
 
+    // replace current piece
     protected void replace(Piece with) {
         piece = with;
         piece.position.set(Board.BOARD_WIDTH / 2, -3);
@@ -490,6 +524,9 @@ public class GamePanel extends StatePanel implements ActionListener {
         return score;
     }
 
+    /**
+     * Position the ghost piece
+     */
     private void dropGhost() {
         ghost.position.set(piece.position.x, piece.position.y);
         while (true) {
@@ -509,6 +546,12 @@ public class GamePanel extends StatePanel implements ActionListener {
         }
     }
 
+    /**
+     * Called when we clear some lines
+     * 
+     * Usually play a sound effect
+     * but may increment level
+     */
     private void clearedLines(int n) {
         score += n * (n + 1) * 250;
         if (n > 0 && n < 4) {
@@ -532,6 +575,9 @@ public class GamePanel extends StatePanel implements ActionListener {
         }
     }
 
+    /**
+     * Change the timer based on level
+     */
     private void setTimer(int level) {
         if (level >= 20)
             timer.setDelay(10);
@@ -539,10 +585,16 @@ public class GamePanel extends StatePanel implements ActionListener {
             timer.setDelay((int)((22750 - 1150 * level) / 27.0));
     }
 
+    /**
+     * Change bg color based on level
+     */
     private void setColor(int level) {
         backgroundColor = BACKGROUNDS[level % BACKGROUNDS.length];
     }
 
+    /**
+     * Cement the current piece
+     */
     private void cement() {
         for (Point x : piece.coords) {
             int tx = x.x + piece.position.x;
@@ -562,6 +614,7 @@ public class GamePanel extends StatePanel implements ActionListener {
         replace();
     }
 
+    // self-explanatory
     public static void drawPauseScreen(Graphics g) {
         g.setFont(GameFrame.PLAY_TITLE);
         g.setColor(TEXT_COLOR);

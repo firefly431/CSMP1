@@ -1,7 +1,3 @@
-// rotation clockwise:        (y, -x)
-// rotation counterclockwise: (-y, x)
-// put that in the Point class as a method
-
 package cs.tetris;
 
 import java.awt.Color;
@@ -9,8 +5,7 @@ import java.awt.Color;
 import cs.tetris.geom.Point;
 
 /**
- *
- * @author s506571
+ * Piece class, most is pretty self-explanatory
  */
 public class Piece implements Cloneable {
     public static final int PIECE_I = 0;
