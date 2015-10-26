@@ -214,6 +214,7 @@ public class GamePanel extends StatePanel implements ActionListener {
             MainMenu.drawControls(g);
             return;
         }
+        /*
         for (int y = 0; y < Board.BOARD_HEIGHT; y++) {
             for (int x = 0; x < Board.BOARD_WIDTH; x++) {
                 int px = x * Board.PIECE_SIZE + BOARD_X;
@@ -226,6 +227,7 @@ public class GamePanel extends StatePanel implements ActionListener {
                     drawBlock(g, px, py, Piece.piece_colors[p], Board.PIECE_SIZE);
             }
         }
+        */
         g.setColor(EMPTY_COLOR);
         g.fillRect(NEXT_X - Board.PIECE_SIZE * 2, NEXT_Y - Board.PIECE_SIZE * 2, Board.PIECE_SIZE * 5, Board.PIECE_SIZE * 5);
         g.fillRect(HOLD_X - Board.PIECE_SIZE * 2, HOLD_Y - Board.PIECE_SIZE * 2, Board.PIECE_SIZE * 5, Board.PIECE_SIZE * 5);
